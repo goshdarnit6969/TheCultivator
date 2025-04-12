@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Cultivators - Home</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 2px solid #ddd;
+    }
+    .menu-icon {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .logo span {
+      font-size: 12px;
+      display: block;
+      font-weight: normal;
+      margin-top: -5px;
+    }
+    .search-bar {
+      flex: 1;
+      margin: 0 20px;
+      display: flex;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .auth-buttons button, #logoutSection button {
+      padding: 6px 12px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    nav {
+      background-color: #222;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li {
+      cursor: pointer;
+    }
+    .icons {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    main {
+      padding: 40px;
+      text-align: center;
+    }
+    .hidden { display: none; }
+    .cert-box {
+      background-color: #fff;
+      padding: 30px;
+      max-width: 400px;
+      margin: 50px auto;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      text-align: center;
+    }
+    .cert-box button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 14px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 2px solid #4CAF50;
+      padding: 30px;
+      border-radius: 10px;
+      display: none;
+      z-index: 1000;
+    }
+    .modal input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+    }
+    .modal button {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="menu-icon">&#9776;</div>
+  <div class="logo">THE CULTIVATORS <span>cultivate everything</span></div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search..." />
+  </div>
+  <div class="auth-buttons" id="authButtons">
+    <button onclick="openSignup()">SIGN UP</button>
+    <button onclick="openSignin()">SIGN IN</button>
+  </div>
+  <div id="logoutSection" class="hidden">
+    <span id="userWelcome" style="margin-right: 10px;">Welcome, User</span>
+    <button onclick="logout()">LOG OUT</button>
+  </div>
+</header>
+
+<nav>
+  <ul>
+    <li onclick="goHome()">Home</li>
+    <li onclick="alert('Learn To Grow section coming soon!')">Learn To Grow</li>
+    <li onclick="goBuildGrow()">Build Your Grow</li>
+    <li onclick="goCert()">Get Master Grower Certification</li>
+    <li onclick="alert('Products section coming soon!')">Products</li>
+  </ul>
+  <div class="icons">
+    <span title="Location" onclick="getLocation()">📍</span>
+    <script>
+      function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const location = { latitude, longitude };
+          const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+          if (loggedIn) {
+          const currentUser = localStorage.getItem("currentUser");
+          localStorage.setItem(`${currentUser}_location`, JSON.stringify(location));
+          }
+
+          alert("Confirmed");
+        },
+        (error) => {
+          alert("Unable to retrieve location. Please allow location access.");
+        }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+      }
+    </script>
+    <span title="Shopping Cart">🛒</span>
+  </div>
+</nav>
+
+<main>
+  <div id="homeSection">
+    <h1>Welcome to The Cultivators</h1>
+    <p>Explore our resources and certifications to grow your skills.</p>
+    <div class="iframe-container" style="margin-top: 20px; height: 500px;">
+      <iframe
+        src="https://www.chatbase.co/chatbot-iframe/DhTyh1V_fnOGXwWKCv1bN"
+        style="width: 100%; height: 100%; border: none;"
+        frameborder="0"
+      ></iframe>
+    </div>
+  </div>
+
+  <div id="certSection" class="hidden">
+    <div class="cert-box">
+      <h2>Cultivator Test</h2>
+      <button onclick="handleLogin()">LOGIN</button>
+      <button onclick="handleTestAccess()">Take Test</button>
+      <button onclick="window.open('study guide.html', '_blank')">VIEW STUDY GUIDE</button>
+      <button onclick="window.open('Testandstudyguidepaywall.html', '_blank')">PURCHASE TEST AND STUDY GUIDE</button>
+    </div>
+  </div>
+
+  <div id="buildGrowSection" class="hidden">
+    <div class="iframe-container" style="margin-top: 20px; height: 500px;">
+      <iframe
+        src="https://www.chatbase.co/chatbot-iframe/oyi2ecVF6sgzRtsW41YE4"
+        width="100%"
+        style="height: 100%; min-height: 700px"
+        frameborder="0"
+      ></iframe>
+    </div>
+  </div>
+
+  <div id="testSection" class="hidden">
+    <div class="container">
+      <div id="start" class="start-screen active">
+        <h1>Master Grower Certification Test</h1>
+        <p><em>Licensed by The Cultivators - Cultivate Everything</em></p>
+        <p>This test will determine your knowledge and qualification as a Master Grower. Please read carefully and choose the best answer for each question.</p>
+        <button class="button" onclick="startTest()">Begin Test</button>
+      </div>
+
+      <div id="question" class="question-screen">
+        <h2 id="questionText"></h2>
+        <p id="progressTracker"></p>
+        <div id="answers"></div>
+        <button id="submitBtn" class="button" onclick="nextQuestion()" disabled>Submit</button>
+      </div>
+
+      <div id="result" class="result-screen">
+        <h2>Test Complete</h2>
+        <p id="score"></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal">
+  <h3>Sign Up</h3>
+  <input type="text" id="newUsername" placeholder="Username" />
+  <input type="password" id="newPassword" placeholder="Password" />
+  <button onclick="signup()">Create Account</button>
+</div>
+
+<!-- Signin Modal -->
+<div id="signinModal" class="modal">
+  <h3>Sign In</h3>
+  <input type="text" id="loginUsername" placeholder="Username" />
+  <input type="password" id="loginPassword" placeholder="Password" />
+  <button onclick="signin()">Sign In</button>
+</div>
+
+<script>
+  function goCert() {
+    document.getElementById("homeSection").classList.add("hidden");
+    document.getElementById("certSection").classList.remove("hidden");
+    document.getElementById("buildGrowSection").classList.add("hidden");
+    document.getElementById("testSection").classList.add("hidden");
+  }
+
+  function goHome() {
+    document.getElementById("homeSection").classList.remove("hidden");
+    document.getElementById("certSection").classList.add("hidden");
+    document.getElementById("buildGrowSection").classList.add("hidden");
+    document.getElementById("testSection").classList.add("hidden");
+  }
+
+  function goBuildGrow() {
+    document.getElementById("homeSection").classList.add("hidden");
+    document.getElementById("certSection").classList.add("hidden");
+    document.getElementById("testSection").classList.add("hidden");
+    document.getElementById("buildGrowSection").classList.remove("hidden");
+  }
+
+  function openSignup() {
+    document.getElementById("signupModal").style.display = "block";
+  }
+
+  function openSignin() {
+    document.getElementById("signinModal").style.display = "block";
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  function signup() {
+    const username = document.getElementById("newUsername").value.trim();
+    const password = document.getElementById("newPassword").value;
+    if (username && password) {
+      localStorage.setItem("cultivatorUser", JSON.stringify({ username, password }));
+      alert("Account created! Please sign in.");
+      closeModal("signupModal");
+    }
+  }
+
+  function signin() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const stored = JSON.parse(localStorage.getItem("cultivatorUser"));
+
+    if (username === "cultivatorjake" && password === "najkon-3jatfe-meStiz") {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("currentUser", username);
+      localStorage.setItem("hasPaidForTest", "true");
+      alert("Admin access granted.");
+      closeModal("signinModal");
+      updateAuthState();
+      return;
+    }
+
+    if (stored && stored.username === username && stored.password === password) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("currentUser", username);
+      updateAuthState();
+      closeModal("signinModal");
+    } else {
+      alert("Invalid credentials.");
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("currentUser");
+    updateAuthState();
+  }
+
+  function updateAuthState() {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (loggedIn) {
+      const name = localStorage.getItem("currentUser");
+      document.getElementById("userWelcome").textContent = "Welcome, " + name;
+      document.getElementById("authButtons").classList.add("hidden");
+      document.getElementById("logoutSection").classList.remove("hidden");
+    } else {
+      document.getElementById("authButtons").classList.remove("hidden");
+      document.getElementById("logoutSection").classList.add("hidden");
+    }
+  }
+
+  function handleLogin() {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (!loggedIn) {
+      openSignin();
+    } else {
+      alert("You are already logged in.");
+    }
+  }
+
+  function handleTestAccess() {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const hasPaid = localStorage.getItem("hasPaidForTest") === "true";
+
+    if (!loggedIn) {
+      alert("You must log in to access the test.");
+      openSignin();
+    } else if (!hasPaid) {
+      alert("You must purchase the test to access it.");
+    } else {
+      window.open('Completetest.html', '_blank');
+    }
+  }
+
+  updateAuthState();
+</script>
+</body>
+</html>

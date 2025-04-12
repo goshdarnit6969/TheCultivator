@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html><head><title>Cannabis AI Chatbot</title><style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 2px solid #ddd;
+    }
+    .menu-icon {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .logo span {
+      font-size: 12px;
+      display: block;
+      font-weight: normal;
+      margin-top: -5px;
+    }
+    .search-bar {
+      flex: 1;
+      margin: 0 20px;
+      display: flex;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .auth-buttons button, #logoutSection button {
+      padding: 6px 12px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    nav {
+      background-color: #222;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li {
+      cursor: pointer;
+    }
+    .icons {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    main {
+      padding: 40px;
+      text-align: center;
+    }
+    .chat-label {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .chat-box {
+      margin-top: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .chat-history {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+    .chat-message {
+      margin: 5px 0;
+    }
+    .chat-message.user {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .chat-message.bot {
+      color: #16a085;
+    }
+    .chat-input-area {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-box input {
+      flex: 1;
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    .send-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0 20px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hidden { display: none; }
+    .cert-box {
+      background-color: #fff;
+      padding: 30px;
+      max-width: 400px;
+      margin: 50px auto;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      text-align: center;
+    }
+    .cert-box button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 14px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 2px solid #4CAF50;
+      padding: 30px;
+      border-radius: 10px;
+      display: none;
+      z-index: 1000;
+    }
+    .modal input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+    }
+    .modal button {
+      width: 100%;
+    }
+  </style></head><body><div id="homeSection">
+<div class="chat-label">Cannabis AI Chat Bot</div>
+<div class="chat-box">
+<div class="chat-history" id="chatHistory"></div>
+<div class="chat-input-area">
+<input id="userInput" placeholder="Ask me anything about growing..." type="text"/>
+<button class="send-button" id="sendButton">➤</button>
+</div>
+<div class="photo-diagnostic">
+<label for="photoUpload">Upload a photo of your plant for diagnostics:</label>
+<input type="file" id="photoUpload" accept="image/*" />
+<button class="send-button" id="diagnoseButton">Diagnose</button>
+</div>
+</div>
+</div><script>
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatHistory = document.getElementById("chatHistory");
+
+    // Display user message
+    const userMsg = document.createElement("div");
+    userMsg.className = "chat-message user";
+    userMsg.textContent = "You: " + message;
+    chatHistory.appendChild(userMsg);
+
+    // Display bot typing indicator
+    const botMsg = document.createElement("div");
+    botMsg.className = "chat-message bot";
+    botMsg.textContent = "Bot: Thinking...";
+    chatHistory.appendChild(botMsg);
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    try {
+      // Call OpenAI API for a response
+      const response = await fetch("https://api.openai.com/v1/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer YOUR_OPENAI_API_KEY", // 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
+        },
+        body: JSON.stringify({
+          model: "text-davinci-003",
+          prompt: `You are a cannabis cultivation expert. Provide a detailed, actionable response to the following question: "${message}". Focus on practical advice and insights.`,
+          max_tokens: 250,
+          temperature: 0.7,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const aiResponse = data.choices[0]?.text?.trim() || "Sorry, I couldn't generate a response.";
+
+      // Update bot message with AI response
+      botMsg.textContent = "Bot: " + aiResponse;
+    } catch (error) {
+      botMsg.textContent = "Bot: Sorry, I couldn't process your request. Please try again later.";
+      console.error("Error with AI response:", error);
+    }
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+    input.value = "";
+    input.focus();
+  }
+
+  async function diagnosePhoto() {
+    const fileInput = document.getElementById("photoUpload");
+    const file = fileInput.files[0];
+    if (!file) {
+      alert("Please upload a photo for diagnostics.");
+      return;
+    }
+
+    const chatHistory = document.getElementById("chatHistory");
+
+    // Display diagnostic message
+    const userMsg = document.createElement("div");
+    userMsg.className = "chat-message user";
+    userMsg.textContent = "You: Diagnose this plant.";
+    chatHistory.appendChild(userMsg);
+
+    const botMsg = document.createElement("div");
+    botMsg.className = "chat-message bot";
+    botMsg.textContent = "Bot: Analyzing photo...";
+    chatHistory.appendChild(botMsg);
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Call a hypothetical API for photo diagnostics
+      const response = await fetch("https://api.example.com/diagnose", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const diagnosis = data.diagnosis || "Sorry, I couldn't analyze the photo.";
+
+      // Update bot message with diagnostic result
+      botMsg.textContent = "Bot: " + diagnosis;
+    } catch (error) {
+      botMsg.textContent = "Bot: Sorry, I couldn't process the photo. Please try again later.";
+      console.error("Error with photo diagnostics:", error);
+    }
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
+
+  document.getElementById("sendButton").addEventListener("click", sendMessage);
+  document.getElementById("userInput").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") sendMessage();
+  });
+  document.getElementById("diagnoseButton").addEventListener("click", diagnosePhoto);
+
+  function goCert() {
+    document.getElementById("homeSection").classList.add("hidden");
+    document.getElementById("certSection").classList.remove("hidden");
+  }
+
+  function goHome() {
+    document.getElementById("homeSection").classList.remove("hidden");
+    document.getElementById("certSection").classList.add("hidden");
+  }
+
+  function openSignup() {
+    document.getElementById("signupModal").style.display = "block";
+  }
+
+  function openSignin() {
+    document.getElementById("signinModal").style.display = "block";
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  function signup() {
+    const username = document.getElementById("newUsername").value.trim();
+    const password = document.getElementById("newPassword").value;
+    if (username && password) {
+      localStorage.setItem("cultivatorUser", JSON.stringify({ username, password }));
+      alert("Account created! Please sign in.");
+      closeModal("signupModal");
+    }
+  }
+
+  function signin() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const stored = JSON.parse(localStorage.getItem("cultivatorUser"));
+
+    // Check for admin account
+    if (username === "cultivatorjake" && password === "najkon-3jatfe-meStiz") {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("currentUser", username);
+      localStorage.setItem("hasPaidForTest", "true"); // Grant access to all locked features
+      alert("Admin access granted.");
+      closeModal("signinModal");
+      updateAuthState();
+      return;
+    }
+
+    // Regular user login
+    if (stored && stored.username === username && stored.password === password) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("currentUser", username);
+      updateAuthState();
+      closeModal("signinModal");
+    } else {
+      alert("Invalid credentials.");
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("currentUser");
+    updateAuthState();
+  }
+
+  function updateAuthState() {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (loggedIn) {
+      const name = localStorage.getItem("currentUser");
+      document.getElementById("userWelcome").textContent = "Welcome, " + name;
+      document.getElementById("authButtons").classList.add("hidden");
+      document.getElementById("logoutSection").classList.remove("hidden");
+    } else {
+      document.getElementById("authButtons").classList.remove("hidden");
+      document.getElementById("logoutSection").classList.add("hidden");
+    }
+  }
+
+  function handleLogin() {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (!loggedIn) {
+      openSignin(); // Open the sign-in modal if not logged in
+    } else {
+      alert("You are already logged in.");
+    }
+  }
+
+  function handleTestAccess() {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const hasPaid = localStorage.getItem("hasPaidForTest") === "true";
+
+    if (!loggedIn) {
+      alert("You must log in to access the test.");
+      openSignin();
+    } else if (!hasPaid) {
+      alert("You must purchase the test to access it.");
+    } else {
+      window.open('Completetest.html', '_blank'); // Open the test page
+    }
+  }
+
+  updateAuthState();
+</script></body></html>

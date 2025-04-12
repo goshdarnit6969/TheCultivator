@@ -1,0 +1,2644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master Grower Certification Test</title>
+  <style>
+    body {
+      background-color: #edf5ec;
+      color: #102a10;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      }
+    .container {
+      max-width: 500px; /* Further reduced width */
+      margin: 40px auto; /* Increased margin for better centering */
+      padding: 1.5rem; /* Keep padding consistent */
+      text-align: center; /* Center-align text */
+    }
+    .start-screen, .question-screen, .result-screen {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    h1, h2 {
+      color: #133d13;
+    }
+    .answer {
+      display: block;
+      background: #e7f0e5;
+      border: 2px solid #b7d7b0;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin: 0.4rem 0;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .answer:hover {
+      background: #d9e9d6;
+    }
+    .answer.selected {
+      background: #b7d7b0;
+      pointer-events: none;
+    }
+    .button {
+      margin-top: 2rem;
+      padding: 10px 20px;
+      background-color: #307c4c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start" class="start-screen active">
+      <h1>Master Grower Certification Test</h1>
+      <p><em>Licensed by The Cultivators - Cultivate Everything</em></p>
+      <p>This test will determine your knowledge and qualification as a Master Grower. Please read carefully and choose the best answer for each question.</p>
+      <button class="button" onclick="startTest()">Begin Test</button>
+    </div>
+
+    <div id="question" class="question-screen">
+      <h2 id="questionText"></h2>
+      <p id="progressTracker"></p> <!-- Progress tracker added -->
+      <div id="answers"></div>
+      <button id="submitBtn" class="button" onclick="nextQuestion()" disabled>Submit</button>
+    </div>
+
+    <div id="result" class="result-screen">
+      <h2>Test Complete</h2>
+      <p id="score"></p>
+    </div>
+  </div>
+
+  <script>
+    let questions = [
+        {
+            q: "What is the ideal humidity range during the vegetative stage for indoor cannabis grows?",
+            options: ["A. 35–45%", "B. 20–30%", "C. 80–90%", "D. 50–70%"],
+            a: "D"
+        },
+        {
+            q: "Which macronutrient is most essential for leafy green growth in early vegetative development?",
+            options: ["A. Magnesium", "B. Nitrogen", "C. Phosphorus", "D. Potassium"],
+            a: "B"
+        },
+        {
+            q: "A cannabis plant that shows both pistils and pollen sacs is best described as:",
+            options: ["A. Hermaphrodite", "B. Male", "C. Feminized", "D. Sterile"],
+            a: "A"
+        },
+        {
+            q: "What tool is most accurate for measuring soil pH in real time?",
+            options: ["A. EC meter", "B. Litmus strip", "C. Soil probe pH meter", "D. TDS pen"],
+            a: "C"
+        },
+        {
+            q: "What part of the cannabis plant produces the highest concentrations of cannabinoids and terpenes?",
+            options: ["A. Pistils", "B. Fan leaves", "C. Trichomes", "D. Calyx"],
+            a: "C"
+        },
+        {
+            q: "A light cycle of 12 hours on / 12 hours off typically triggers which growth phase?",
+            options: ["A. Cloning", "B. Flowering", "C. Vegetative", "D. Seedling"],
+            a: "B"
+        },
+        {
+            q: "What is the primary reason to flush a cannabis plant before harvest?",
+            options: ["A. Increase root growth", "B. Maximize resin", "C. Kill pests", "D. Remove residual nutrients"],
+            a: "D"
+        },
+        {
+            q: "Which of the following pests is known for leaving webbing on cannabis buds?",
+            options: ["A. Thrips", "B. Spider mites", "C. Fungus gnats", "D. Aphids"],
+            a: "B"
+        },
+        {
+            q: "What deficiency causes purple stems and slow growth, especially in early veg?",
+            options: ["A. Calcium", "B. Phosphorus", "C. Potassium", "D. Magnesium"],
+            a: "B"
+        },
+        {
+            q: "What is the most likely result of consistently overwatering cannabis plants?",
+            options: ["A. Nutrient burn", "B. High THC content", "C. Root rot", "D. Thick stems"],
+            a: "C"
+        },
+        {
+            q: "Which lighting type is most commonly used for indoor flowering due to its strong red spectrum and intensity?",
+            options: ["A. Metal Halide (MH)", "B. Ceramic Metal Halide (CMH)", "C. T5 Fluorescent", "D. High-Pressure Sodium (HPS)"],
+            a: "D"
+        },
+        {
+            q: "What is the main reason growers top a cannabis plant during vegetative growth?",
+            options: ["A. To slow plant metabolism", "B. To create bushier growth and multiple colas", "C. To prevent hermaphroditism", "D. To increase internodal spacing"],
+            a: "B"
+        },
+        {
+            q: "Which deficiency typically causes yellowing between the veins of older fan leaves?",
+            options: ["A. Magnesium", "B. Nitrogen", "C. Calcium", "D. Iron"],
+            a: "A"
+        },
+        {
+            q: "What is the purpose of using a carbon filter in an indoor grow setup?",
+            options: ["A. Trap nutrient runoff", "B. Add CO₂ to the air", "C. Mask plant odor", "D. Reflect light"],
+            a: "C"
+        },
+        {
+            q: "Which factor has the greatest impact on terpene production in cannabis plants?",
+            options: ["A. Light spectrum during flowering", "B. Nutrient strength during veg", "C. Humidity during cloning", "D. Training frequency during flower"],
+            a: "A"
+        },
+        {
+            q: "What pH range is ideal for soil-grown cannabis plants to ensure proper nutrient uptake?",
+            options: ["A. 5.0–5.5", "B. 6.0–7.0", "C. 4.8–5.8", "D. 7.2–8.0"],
+            a: "B"
+        },
+        {
+            q: "Leaf tips appear burned and the plant looks dark green. What is the most likely cause?",
+            options: ["A. Iron deficiency", "B. Nitrogen toxicity", "C. Calcium deficiency", "D. Overwatering"],
+            a: "B"
+        },
+        {
+            q: "During cloning, which condition is most critical in the first 5 days?",
+            options: ["A. Strong airflow", "B. High humidity", "C. Low temperatures", "D. Dry rooting medium"],
+            a: "B"
+        },
+        {
+            q: "Which training method involves bending branches and tying them down to shape the canopy?",
+            options: ["A. Super cropping", "B. Lollipopping", "C. Topping", "D. Low-Stress Training (LST)"],
+            a: "D"
+        },
+        {
+            q: "Which of the following is a micronutrient essential for cannabis but required in small amounts?",
+            options: ["A. Nitrogen", "B. Magnesium", "C. Boron", "D. Phosphorus"],
+            a: "C"
+        },
+        {
+            q: "What is the ideal temperature range for flowering cannabis during lights-on hours?",
+            options: ["A. 60–65°F", "B. 65–70°F", "C. 70–85°F", "D. 90–95°F"],
+            a: "C"
+        },
+        {
+            q: "Which of the following is NOT a potential sign of light burn in cannabis?",
+            options: ["A. Bleached leaf tops", "B. Curling leaf edges", "C. Sudden yellowing of lower fan leaves", "D. Leaf tips turning crispy"],
+            a: "C"
+        },
+        {
+            q: "What does 'EC' stand for when measuring nutrient strength?",
+            options: ["A. Electrochemical Capacity", "B. Electrical Conductivity", "C. Elemental Concentration", "D. Environmental Correction"],
+            a: "B"
+        },
+        {
+            q: "Which deficiency often results in slow new growth and twisted leaves in cannabis plants?",
+            options: ["A. Potassium", "B. Iron", "C. Zinc", "D. Calcium"],
+            a: "C"
+        },
+        {
+            q: "Which of the following is a benefit of using coco coir as a growing medium?",
+            options: ["A. Naturally high in nutrients", "B. Retains water and drains well", "C. Acts as a natural pesticide", "D. Requires no pH adjustment"],
+            a: "B"
+        },
+        {
+            q: "What is a common early sign of potassium deficiency in cannabis?",
+            options: ["A. Bright yellowing of new growth", "B. Interveinal purple striping", "C. Brown leaf edges and tips", "D. White powdery spots"],
+            a: "C"
+        },
+        {
+            q: "How long does the average cannabis flowering stage last for photoperiod strains?",
+            options: ["A. 2–3 weeks", "B. 4–5 weeks", "C. 6–10 weeks", "D. 12–16 weeks"],
+            a: "C"
+        },
+        {
+            q: "What does the term 'runoff' refer to in cannabis cultivation?",
+            options: ["A. Nutrient buildup on leaves", "B. Water and nutrients that drain out the bottom of the pot", "C. Sudden drop in pH", "D. Leaf loss during defoliation"],
+            a: "B"
+        },
+        {
+            q: "Which of the following is most important when storing dried cannabis flower long-term?",
+            options: ["A. Keeping it frozen", "B. Storing it in light", "C. Keeping it airtight in the dark", "D. Mixing it with silica gel"],
+            a: "C"
+        },
+        {
+            q: "Which technique involves removing lower bud sites that won’t receive adequate light?",
+            options: ["A. Mainlining", "B. Defoliation", "C. LST", "D. Lollipopping"],
+            a: "D"
+        },
+        {
+            q: "Which of the following is the best method for checking the actual temperature at the plant canopy level?",
+            options: ["A. Thermometer on the grow room wall", "B. Infrared thermometer at leaf surface", "C. Soil thermometer probe", "D. Measuring exhaust vent air"],
+            a: "B"
+        },
+        {
+            q: "Which stage of cannabis growth typically requires the most nitrogen?",
+            options: ["A. Seedling", "B. Vegetative", "C. Early flowering", "D. Late flowering"],
+            a: "B"
+        },
+        {
+            q: "Which of these is considered a beneficial insect for fighting cannabis pests?",
+            options: ["A. Fungus gnat", "B. Whitefly", "C. Spider mite", "D. Ladybug"],
+            a: "D"
+        },
+        {
+            q: "What is a primary goal of the SCROG (Screen of Green) technique?",
+            options: ["A. Prevent root-bound pots", "B. Encourage vertical stretching", "C. Maximize airflow beneath plants", "D. Create an even canopy for better light distribution"],
+            a: "D"
+        },
+        {
+            q: "What is the optimal range for EC (Electrical Conductivity) during peak flowering in hydroponics?",
+            options: ["A. 0.5–1.0", "B. 1.0–1.6", "C. 1.6–2.2", "D. 2.5–3.0"],
+            a: "C"
+        },
+        {
+            q: "Which element is essential for building strong cell walls in cannabis plants?",
+            options: ["A. Boron", "B. Potassium", "C. Calcium", "D. Sulfur"],
+            a: "C"
+        },
+        {
+            q: "What causes 'clawing' of leaves in cannabis plants?",
+            options: ["A. Excessive heat", "B. High humidity", "C. Nitrogen toxicity", "D. Light deficiency"],
+            a: "C"
+        },
+        {
+            q: "What does 'fimming' aim to do when performed correctly?",
+            options: ["A. Remove the fan leaves", "B. Sever the main stem entirely", "C. Create multiple new growth tips", "D. Flush nutrients from the medium"],
+            a: "C"
+        },
+        {
+            q: "Why is airflow important in indoor cannabis grows?",
+            options: ["A. To thicken stems", "B. To reduce pests", "C. To prevent mold and strengthen plants", "D. All of the above"],
+            a: "D"
+        },
+        {
+            q: "What’s the recommended darkness period during drying after harvest?",
+            options: ["A. 24 hours of darkness for the first day only", "B. 12/12 light cycle to ease transition", "C. Full darkness for the entire drying period", "D. Light exposure to boost terpene profile"],
+            a: "C"
+        },
+        {
+            q: "Which of the following is a common cause of pH drift in hydroponic systems?",
+            options: ["A. Using filtered water", "B. Adding beneficial microbes", "C. Evaporation and nutrient imbalance", "D. Low humidity"],
+            a: "C"
+        },
+        {
+            q: "Which training method involves intentionally bruising the stem to redirect growth without snapping it?",
+            options: ["A. LST", "B. Mainlining", "C. Topping", "D. Super cropping"],
+            a: "D"
+        },
+        {
+            q: "What happens if cannabis is harvested too early in flower?",
+            options: ["A. Buds are overly dense and hard to trim", "B. Cannabinoids may be underdeveloped and yield is reduced", "C. Trichomes will contain too much CBN", "D. Terpenes are fully developed but THC is lost"],
+            a: "B"
+        },
+        {
+            q: "Which of these is a sign of heat stress in cannabis plants?",
+            options: ["A. Dark green leaves with burnt tips", "B. Leaves drooping downward", "C. Leaves curling upwards like tacos", "D. Leaf stems turning purple"],
+            a: "C"
+        },
+        {
+            q: "When mixing nutrients, which is the correct order to prevent nutrient lockout or precipitation?",
+            options: ["A. Add pH up/down first", "B. Add all nutrients together before water", "C. Mix one nutrient at a time into water", "D. Add calcium last to stabilize"],
+            a: "C"
+        },
+        {
+            q: "What’s the main difference between autoflower and photoperiod cannabis strains?",
+            options: ["A. Autoflowers require 12/12 to flower", "B. Autoflowers bloom based on age, not light cycle", "C. Photoperiod plants are always feminized", "D. Photoperiods cannot be cloned"],
+            a: "B"
+        },
+        {
+            q: "Which terpene is known for its strong citrus aroma and mood-lifting effects?",
+            options: ["A. Myrcene", "B. Caryophyllene", "C. Pinene", "D. Limonene"],
+            a: "D"
+        },
+        {
+            q: "What’s the purpose of flushing with plain water 1–2 weeks before harvest?",
+            options: ["A. Increase nitrogen uptake", "B. Clean the root zone for smoother taste and burn", "C. Trigger resin production", "D. Prevent late-stage stretch"],
+            a: "B"
+        },
+        {
+            q: "Which growing technique involves cutting and re-rooting branches from a mother plant?",
+            options: ["A. Defoliation", "B. Grafting", "C. Topping", "D. Cloning"],
+            a: "D"
+        },
+        {
+            q: "Why is airflow below the canopy important in dense grow setups?",
+            options: ["A. It increases nutrient uptake", "B. It strengthens buds", "C. It reduces mold and mildew risk", "D. It helps keep temperatures below 65°F"],
+            a: "C"
+        },
+        {
+            q: "Which part of the cannabis plant should be avoided when trimming for optimal smoke quality?",
+            options: ["A. Sugar leaves", "B. Trichomes", "C. Fan leaves", "D. Pistils"],
+            a: "C"
+        },
+        {
+            q: "What does 'VPD' stand for in indoor cultivation?",
+            options: ["A. Vapor Pressure Depletion", "B. Ventilation Pressure Differential", "C. Vapor Pressure Deficit", "D. Variable Plant Development"],
+            a: "C"
+        },
+        {
+            q: "In an organic soil grow, what’s a common way to introduce beneficial microbes to support root health?",
+            options: ["A. Hydrogen peroxide flush", "B. Molasses feeding", "C. Cal-mag foliar spray", "D. Artificial hormones"],
+            a: "B"
+        },
+        {
+            q: "Which of the following is most likely to increase internodal spacing, resulting in a stretched plant?",
+            options: ["A. Excess light", "B. Low humidity", "C. Insufficient light intensity", "D. Overwatering"],
+            a: "C"
+        },
+        {
+            q: "Which technique is most commonly used to manage height in limited vertical space?",
+            options: ["A. Deep water culture", "B. Super cropping", "C. Sea of Green (SOG)", "D. Monster cropping"],
+            a: "C"
+        },
+        {
+            q: "When drying cannabis, what is the ideal humidity range to maintain quality and prevent mold?",
+            options: ["A. 20–30%", "B. 35–45%", "C. 55–65%", "D. 70–80%"],
+            a: "C"
+        },
+        {
+            q: "What effect does light leakage during dark hours have on flowering cannabis?",
+            options: ["A. Increased THC production", "B. Delayed harvest", "C. Reveg or hermaphroditism", "D. Accelerated ripening"],
+            a: "C"
+        },
+        {
+            q: "Which of the following best defines a landrace strain?",
+            options: ["A. A lab-created hybrid", "B. A clone-only elite cultivar", "C. A genetically stable strain native to a specific region", "D. A polyhybrid crossed with ruderalis"],
+            a: "C"
+        },
+        {
+            q: "What is the most common cause of foxtailing in cannabis buds?",
+            options: ["A. Early harvest", "B. Cold temperatures", "C. Genetic mutation or heat/light stress", "D. Overfeeding phosphorus"],
+            a: "C"
+        },
+        {
+            q: "Which trichome color combination generally indicates peak THC levels and best harvest timing?",
+            options: ["A. All clear", "B. All amber", "C. Mostly cloudy with some amber", "D. Mostly cloudy with some clear"],
+            a: "C"
+        },
+        {
+            q: "What does a '1-2-2' NPK ratio generally indicate in a cannabis nutrient product?",
+            options: ["A. It’s made for seedlings", "B. It’s balanced for veg", "C. It’s designed for flowering", "D. It’s a flushing formula"],
+            a: "C"
+        },
+        {
+            q: "What happens when relative humidity is too low during veg?",
+            options: ["A. Plants wilt and stretch", "B. Leaves become leathery and growth slows", "C. THC content increases", "D. Nutrient uptake improves"],
+            a: "B"
+        },
+        {
+            q: "What role does silica play in cannabis cultivation?",
+            options: ["A. Enhances flavor", "B. Increases resin", "C. Strengthens plant cell walls and improves stress resistance", "D. Boosts nitrogen absorption"],
+            a: "C"
+        },
+        {
+            q: "Why should water be pH-balanced after adding nutrients?",
+            options: ["A. Nutrients don’t change pH", "B. pH only matters before mixing", "C. Nutrients alter pH, so final mix needs adjustment", "D. It saves time"],
+            a: "C"
+        },
+        {
+            q: "What is the function of mycorrhizal fungi in cannabis soil?",
+            options: ["A. Prevent pest infestations", "B. Supply direct nutrients", "C. Improve root uptake by forming a symbiotic relationship", "D. Break down salt buildup"],
+            a: "C"
+        },
+        {
+            q: "Which is the best practice for transplanting young cannabis plants into larger containers?",
+            options: ["A. Water after 3 days", "B. Use cold soil to reduce shock", "C. Water immediately and avoid compacting the medium", "D. Trim the roots before transplant"],
+            a: "C"
+        },
+        {
+            q: "Which factor does NOT affect nutrient absorption in cannabis?",
+            options: ["A. Soil pH", "B. Water temperature", "C. Moon phase", "D. EC levels"],
+            a: "C"
+        },
+        {
+            q: "What does 'flushing' do in a hydroponic grow?",
+            options: ["A. Increases potassium", "B. Removes built-up salts and nutrients", "C. Boosts CO₂ levels", "D. Kills pests"],
+            a: "B"
+        },
+        {
+            q: "What causes 'windburn' in cannabis plants?",
+            options: ["A. High humidity", "B. Not enough airflow", "C. Light deficiency", "D. Direct, strong airflow on leaves"],
+            a: "D"
+        },
+        {
+            q: "What is the most efficient way to determine if your cannabis buds are fully dried and ready to cure?",
+            options: ["A. Buds feel cold", "B. Buds smell sweet", "C. Small stems snap cleanly instead of bending", "D. Pistils turn brown"],
+            a: "C"
+        },
+        {
+            q: "What is the main reason to use fabric pots instead of plastic pots for cannabis?",
+            options: ["A. They’re more affordable", "B. They retain water better", "C. They provide better drainage and air pruning of roots", "D. They require less space"],
+            a: "C"
+        },
+        {
+            q: "Which environmental condition is most likely to cause powdery mildew?",
+            options: ["A. High heat and low humidity", "B. Low humidity and strong airflow", "C. High humidity with poor airflow", "D. Intense light and low pH"],
+            a: "C"
+        },
+        {
+            q: "What does a PGR (Plant Growth Regulator) additive often do in cannabis products?",
+            options: ["A. Boost THC naturally", "B. Increase terpene levels", "C. Make buds denser using synthetic hormones", "D. Flush nutrients from plants"],
+            a: "C"
+        },
+        {
+            q: "What is the most effective way to reduce pests organically in a living soil system?",
+            options: ["A. Neem oil foliar spray", "B. Hydrogen peroxide drench", "C. Chemical pesticide", "D. Increasing nitrogen"],
+            a: "A"
+        },
+        {
+            q: "What deficiency often causes brown or rusty spots on leaves during mid to late flower?",
+            options: ["A. Nitrogen", "B. Magnesium", "C. Potassium", "D. Calcium"],
+            a: "C"
+        },
+        {
+            q: "What should be done first when diagnosing a cannabis plant issue?",
+            options: ["A. Increase light intensity", "B. Apply nutrients", "C. Check pH and environment", "D. Harvest early"],
+            a: "C"
+        },
+        {
+            q: "What stage of growth benefits most from blue light spectrum?",
+            options: ["A. Cloning", "B. Flowering", "C. Seedling/Vegetative", "D. Late harvest"],
+            a: "C"
+        },
+        {
+            q: "What’s one risk of using tap water without testing or treating it?",
+            options: ["A. Higher yield", "B. Unwanted pH fluctuation and mineral excess", "C. Faster rooting", "D. Enhanced terpene profile"],
+            a: "B"
+        },
+        {
+            q: "What tool is used to examine trichome color and structure up close for harvest timing?",
+            options: ["A. Lux meter", "B. pH probe", "C. Jeweler’s loupe or microscope", "D. EC meter"],
+            a: "C"
+        },
+        {
+            q: "Which of the following is NOT a reason to use companion plants in outdoor cannabis grows?",
+            options: ["A. Pest control", "B. Soil nutrient boosting", "C. Attracting pollinators to increase bud yield", "D. Improving biodiversity"],
+            a: "C"
+        },
+        {
+            q: "Which part of the cannabis plant should you never use for cloning?",
+            options: ["A. Healthy side branch with 3 nodes", "B. Top cola", "C. Lower soft branch", "D. Mid-height shoot with visible growth"],
+            a: "B"
+        },
+        {
+            q: "What is the safest way to raise pH in a hydroponic system?",
+            options: ["A. Lemon juice", "B. Baking soda", "C. pH Up (potassium hydroxide-based)", "D. Hydrogen peroxide"],
+            a: "C"
+        },
+        {
+            q: "Which of the following lighting schedules will not trigger flowering in a photoperiod plant?",
+            options: ["A. 12/12", "B. 11/13", "C. 18/6", "D. 10/14"],
+            a: "C"
+        },
+        {
+            q: "What is the primary danger of drying buds too quickly?",
+            options: ["A. Loss of THC potency", "B. Increased density", "C. Bud rot", "D. Harsh taste and poor terpene retention"],
+            a: "D"
+        },
+        {
+            q: "What’s the main role of potassium during flowering?",
+            options: ["A. Promote leafy growth", "B. Stimulate root expansion", "C. Improve bud formation and density", "D. Lower plant temperature"],
+            a: "C"
+        },
+        {
+            q: "What is the most accurate method of checking water PPM or EC?",
+            options: ["A. pH strips", "B. Lux meter", "C. Digital conductivity meter", "D. Moisture meter"],
+            a: "C"
+        },
+        {
+            q: "What is the benefit of 'lollipop' pruning technique in cannabis?",
+            options: ["A. Reduces terpene loss", "B. Focuses energy on top colas for better yields", "C. Improves CO₂ intake", "D. Shortens flowering time"],
+            a: "B"
+        },
+        {
+            q: "What’s the danger of overfeeding calcium in a hydro setup?",
+            options: ["A. Bud bleaching", "B. Nitrogen lockout", "C. Iron or magnesium lockout", "D. Stretching during flower"],
+            a: "C"
+        },
+        {
+            q: "Which of the following is an abiotic stress factor in cannabis cultivation?",
+            options: ["A. Spider mites", "B. Powdery mildew", "C. Light stress", "D. Root aphids"],
+            a: "C"
+        },
+        {
+            q: "How can overwatering be distinguished from underwatering?",
+            options: ["A. Both cause yellowing and are visually identical", "B. Overwatering causes drooping with swollen leaves; underwatering causes dry, crispy leaves", "C. Overwatering causes burnt leaf tips", "D. Underwatering increases chlorophyll"],
+            a: "B"
+        },
+        {
+            q: "What happens if you leave buds in the curing jar without burping them during the first 2 weeks?",
+            options: ["A. THC increases", "B. Chlorophyll fades faster", "C. Moisture builds and may cause mold", "D. Buds become more aromatic"],
+            a: "C"
+        },
+        {
+            q: "Which is a true statement about feminized seeds?",
+            options: ["A. They always produce autoflowering traits", "B. They have no THC", "C. They are genetically bred to produce only female plants", "D. They can’t be cloned"],
+            a: "C"
+        },
+        {
+            q: "What’s the ideal temperature range during cannabis drying to preserve terpenes and prevent mold?",
+            options: ["A. 55–60°F", "B. 60–70°F", "C. 75–85°F", "D. 85–95°F"],
+            a: "B"
+        },
+        {
+            q: "What part of the cannabis plant develops first after germination?",
+            options: ["A. Fan leaves", "B. Root tap", "C. Cotyledons", "D. Main stem"],
+            a: "B"
+        },
+        {
+            q: "What is the most likely cause of a pH drop in a DWC (Deep Water Culture) system?",
+            options: ["A. Overfeeding silica", "B. Pathogen or bacterial growth", "C. Strong lighting", "D. Increased potassium"],
+            a: "B"
+        },
+        {
+            q: "Which of the following is a mobile nutrient in cannabis plants?",
+            options: ["A. Calcium", "B. Sulfur", "C. Iron", "D. Nitrogen"],
+            a: "D"
+        },
+        {
+          q: "What is the primary symptom of a sulfur deficiency?",
+          options: ["A. Browning leaf tips", "B. Yellowing of new growth", "C. Leaf curling downward", "D. Purple undersides of fan leaves"],
+          a: "B"
+        },
+        {
+          q: "What is a potential risk of using unfiltered well water for cannabis?",
+          options: ["A. Extra CO₂ in the water", "B. High levels of chlorine", "C. Pathogens and inconsistent mineral content", "D. Low oxygen levels"],
+          a: "C"
+        },
+        {
+          q: "What is the ideal relative humidity range during the final 2 weeks of flower?",
+          options: ["A. 30–40%", "B. 40–60%", "C. 60–70%", "D. 70–85%"],
+          a: "A"
+        },
+        {
+          q: "What causes buds to reveg mid-flower in an outdoor grow?",
+          options: ["A. Too much potassium", "B. Excess cold", "C. Light cycle confusion (e.g. light leaks or increasing daylight)", "D. Overfeeding nitrogen"],
+          a: "C"
+        },
+        {
+          q: "Which of the following will most directly help prevent root-bound plants?",
+          options: ["A. Using large clay pots", "B. Watering less often", "C. Transplanting into larger containers as the plant grows", "D. Switching to LED lights"],
+          a: "C"
+        },
+        {
+          q: "What’s the main reason growers use perlite in soil mixes?",
+          options: ["A. Raise EC", "B. Buffer pH", "C. Improve drainage and aeration", "D. Add silica"],
+          a: "C"
+        },
+        {
+          q: "Which compound is primarily responsible for the psychoactive effects of cannabis?",
+          options: ["A. CBD", "B. THCa", "C. THC", "D. CBN"],
+          a: "C"
+        },
+        {
+          q: "What’s a major sign of over-fertilization in cannabis?",
+          options: ["A. Brittle stems", "B. Rapid root growth", "C. Nutrient burn and dark green foliage", "D. Wilting despite moist soil"],
+          a: "C"
+        },
+        {
+          q: "Which is the most accurate way to assess nutrient concentration in hydroponics?",
+          options: ["A. Measuring runoff", "B. Smelling the solution", "C. Using an EC or PPM meter", "D. Observing leaf tips"],
+          a: "C"
+        },
+        {
+          q: "What’s one benefit of cold night temperatures during late flower?",
+          options: ["A. Faster nutrient uptake", "B. Trichome degradation", "C. Increased stem stretch", "D. Enhanced color and anthocyanin expression"],
+          a: "D"
+        },
+        {
+          q: "Which of the following techniques removes the entire apical meristem to stop vertical growth?",
+          options: ["A. LST", "B. Topping", "C. Defoliation", "D. Lollipopping"],
+          a: "B"
+        },
+        {
+          q: "Which of the following is the best pH range for cannabis grown in coco coir?",
+          options: ["A. 5.5–6.2", "B. 6.5–7.2", "C. 4.0–5.0", "D. 7.0–7.5"],
+          a: "A"
+        },
+        {
+          q: "What does “foxfarming” refer to in cannabis cultivation?",
+          options: ["A. A style of pruning", "B. A slang term for overharvesting", "C. A popular organic nutrient brand", "D. A heat-related flower mutation"],
+          a: "C"
+        },
+        {
+          q: "Which organelle in plant cells is primarily responsible for photosynthesis?",
+          options: ["A. Mitochondria", "B. Nucleus", "C. Chloroplast", "D. Cytoplasm"],
+          a: "C"
+        },
+        {
+          q: "What’s the most common early sign of phosphorus deficiency in cannabis?",
+          options: ["A. Wilting and soft stems", "B. Purpling of stems and darkening of lower leaves", "C. Pale new growth at the top", "D. Brittle, curling leaves"],
+          a: "B"
+        },
+        {
+          q: "Which of the following actions is best for improving bud density during flowering?",
+          options: ["A. Increasing nitrogen", "B. Using blue spectrum light", "C. Increasing light intensity and maintaining correct temperature", "D. Feeding more silica"],
+          a: "C"
+        },
+        {
+          q: "What is a “claw leaf” a typical symptom of?",
+          options: ["A. Overwatering", "B. Calcium deficiency", "C. Nitrogen toxicity", "D. Magnesium deficiency"],
+          a: "C"
+        },
+        {
+          q: "What does “hardening off” clones or seedlings refer to?",
+          options: ["A. Adding extra calcium to thicken stems", "B. Transitioning them slowly to stronger light and outside conditions", "C. Reducing humidity after transplant", "D. Placing plants in total darkness before flowering"],
+          a: "B"
+        },
+        {
+          q: "What part of a cannabis trichome contains the highest cannabinoid concentration?",
+          options: ["A. Base stalk", "B. Central bulb", "C. Head/glandular cap", "D. Leaf surface"],
+          a: "C"
+        },
+        {
+          q: "Why is it important to clean and calibrate pH meters regularly?",
+          options: ["A. To increase root zone oxygen", "B. To protect against fungal infections", "C. To ensure accurate nutrient delivery and readings", "D. To balance electrical current"],
+          a: "C"
+        },
+        {
+          q: "Which cannabis nutrient is least mobile, making deficiencies appear on new growth first?",
+          options: ["A. Nitrogen", "B. Magnesium", "C. Iron", "D. Potassium"],
+          a: "C"
+        },
+        {
+          q: "Which of the following can be caused by high humidity during late flowering?",
+          options: ["A. Increased crystal production", "B. Thicker branches", "C. Bud rot and mold", "D. Delayed terpene loss"],
+          a: "C"
+        },
+        {
+          q: "What is the best environment for cannabis seedlings?",
+          options: ["A. 80°F, 90% RH, direct HPS light", "B. 70°F, 30% RH, oscillating fan", "C. 75–80°F, 70–80% RH, gentle fluorescent light", "D. 65°F, 40% RH, LED panel on full power"],
+          a: "C"
+        },
+        {
+          q: "What is the most efficient way to cool a sealed grow room with multiple high-heat light sources?",
+          options: ["A. Oscillating fans only", "B. Carbon filter and passive intake", "C. Central air conditioning with air exchange", "D. Spraying plants with water"],
+          a: "C"
+    },
+    { 
+    "q": "Which of the following is a common mistake when drying cannabis?",
+    "options": ["A. Using a humidifier", "B. Keeping it in the dark", "C. Drying too quickly with high heat", "D. Hanging whole branches"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal light schedule for clones to root successfully?",
+        "options": ["A. 24/0", "B. 12/12", "C. 14/10", "D. 18/6"],
+        "a": "A"
+    },
+    {
+        "q": "Which of these deficiencies most often shows rust-colored spots and margin burn?",
+        "options": ["A. Calcium", "B. Potassium", "C. Sulfur", "D. Phosphorus"],
+        "a": "B"
+    },
+    {
+        "q": "When trimming cannabis, what tool is preferred for precision and resin control?",
+        "options": ["A. Kitchen scissors", "B. Razor blade", "C. Teflon-coated trimming scissors", "D. Fingernails"],
+        "a": "C"
+    },
+    {
+        "q": "Why is it best to cure cannabis buds slowly over several weeks?",
+        "options": ["A. It activates THC", "B. It improves bag appeal only", "C. It reduces mold in wet buds", "D. It preserves terpenes and improves smoke quality"],
+        "a": "D"
+    },
+    {
+        "q": "What is the purpose of a humidifier in a veg grow room?",
+        "options": ["A. Boost CO₂ levels", "B. Increase temperature", "C. Maintain optimal RH for stomatal function", "D. Slow root growth"],
+        "a": "C"
+    },
+    {
+        "q": "Why is root-bound stress harmful to cannabis plants?",
+        "options": ["A. It increases nutrient uptake", "B. It causes roots to rot and restricts water/nutrient flow", "C. It encourages cloning", "D. It creates natural pest defense"],
+        "a": "B"
+    },
+    {
+        "q": "What lighting color spectrum is most useful for stimulating flowering?",
+        "options": ["A. Blue", "B. Green", "C. Red", "D. UV"],
+        "a": "C"
+    },
+    {
+        "q": "What is the function of kelp meal or liquid kelp in organic cannabis cultivation?",
+        "options": ["A. Increases calcium", "B. Supplies micronutrients and boosts stress resistance", "C. Lowers pH", "D. Promotes immediate flowering"],
+        "a": "B"
+    },
+    {
+        "q": "Which part of the cannabis plant contains the highest concentration of terpenes?",
+        "options": ["A. Stalk", "B. Roots", "C. Trichome glands", "D. Fan leaves"],
+        "a": "C"
+    },
+    {
+        "q": "Which cannabis nutrient deficiency is often confused with iron deficiency because both show yellowing on new growth?",
+        "options": ["A. Magnesium", "B. Calcium", "C. Sulfur", "D. Phosphorus"],
+        "a": "C"
+    },
+    {
+        "q": "What does a lux meter measure in a grow room?",
+        "options": ["A. CO₂ levels", "B. Light intensity as perceived by the human eye", "C. Full PAR spectrum output", "D. Wattage consumption"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following best describes a polyhybrid cannabis strain?",
+        "options": ["A. A plant with mixed male/female genetics", "B. A pure landrace", "C. A strain bred from multiple hybrid parents", "D. A clone-only phenotype"],
+        "a": "C"
+    },
+    {
+        "q": "What is the purpose of defoliation during late veg or early flower?",
+        "options": ["A. Trigger flowering faster", "B. Increase stretch", "C. Improve light penetration and airflow to bud sites", "D. Prevent nutrient uptake"],
+        "a": "C"
+    },
+    {
+        "q": "What is the best water temperature range for feeding cannabis plants?",
+        "options": ["A. 40–50°F", "B. 55–60°F", "C. 65–72°F", "D. 80–85°F"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following does NOT directly affect trichome production?",
+        "options": ["A. Light intensity", "B. Proper nutrient ratios", "C. Strong airflow", "D. Strain genetics"],
+        "a": "C"
+    },
+    {
+        "q": "Which of these is a sign of calcium deficiency?",
+        "options": ["A. Yellowing between leaf veins", "B. Leaf curling like tacos", "C. Brown spots and weak stems", "D. Purple petioles"],
+        "a": "C"
+    },
+    {
+        "q": "Why are CO₂ injections only beneficial in sealed rooms with high light intensity?",
+        "options": ["A. CO₂ blocks mold", "B. CO₂ only affects root uptake", "C. CO₂ only helps if plants can photosynthesize faster", "D. It increases nitrogen absorption"],
+        "a": "C"
+    },
+    {
+        "q": "What is the difference between ppm and EC in cannabis cultivation?",
+        "options": ["A. EC is for soil only, ppm is for hydro", "B. PPM measures humidity, EC measures light", "C. EC is the raw electrical measurement, ppm is a converted value", "D. PPM is more accurate"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following is a true statement about light leaks during flower?",
+        "options": ["A. They don’t affect potency", "B. They trigger faster bud development", "C. They can cause hermaphroditism", "D. They only matter during veg"],
+        "a": "C"
+      },
+  {
+        "q": "What’s the biggest risk of using unsterilized soil in an indoor grow?",
+        "options": ["A. Faster growth", "B. Overproduction of terpenes", "C. Introducing pests, mold, or pathogens", "D. Light contamination"],
+        "a": "C"
+    },
+    {
+        "q": "Which technique allows you to create a flat canopy by tying down branches over time?",
+        "options": ["A. FIM", "B. Lollipopping", "C. Low-Stress Training (LST)", "D. Super cropping"],
+        "a": "C"
+    },
+    {
+        "q": "What nutrient is often locked out if your soil pH drops below 5.5?",
+        "options": ["A. Nitrogen", "B. Calcium", "C. Iron", "D. Phosphorus"],
+        "a": "D"
+    },
+    {
+        "q": "What is the most common cause of slow growth in seedlings?",
+        "options": ["A. Lack of airflow", "B. Overfeeding nutrients too early", "C. Full spectrum lighting", "D. Low humidity"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following is NOT a benefit of using organic compost teas?",
+        "options": ["A. Introducing beneficial microbes", "B. Providing immediate NPK spikes", "C. Feeding soil life", "D. Improving plant immune function"],
+        "a": "B"
+    },
+    {
+        "q": "When should you first top a cannabis plant for optimal structure?",
+        "options": ["A. After it has at least 3–5 nodes", "B. At the seedling stage", "C. During the stretch phase of flower", "D. Right after transplanting"],
+        "a": "A"
+    },
+    {
+        "q": "What’s the term for a plant reverting from flower back to vegetative growth?",
+        "options": ["A. Lollipopping", "B. Reveg", "C. Shock cycling", "D. Phototropic reversal"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the purpose of adding molasses during flowering in organic soil grows?",
+        "options": ["A. Boosting potassium", "B. Feeding beneficial microbes and improving flavor", "C. Lowering soil pH", "D. Increasing chlorophyll"],
+        "a": "B"
+    },
+    {
+        "q": "Which of these is a mobile nutrient, meaning deficiency symptoms start in older leaves first?",
+        "options": ["A. Iron", "B. Calcium", "C. Nitrogen", "D. Sulfur"],
+        "a": "C"
+    },
+    {
+        "q": "What is the most accurate way to determine harvest readiness in trichomes?",
+        "options": ["A. Seeing brown pistils", "B. Feeling bud density", "C. Using a microscope to inspect trichome color", "D. Tracking days since flip"],
+        "a": "C"
+    },
+    {
+        "q": "What is the optimal RH (relative humidity) range during late flowering to avoid mold?",
+        "options": ["A. 70–80%", "B. 60–70%", "C. 45–55%", "D. 30–35%"],
+        "a": "C"
+    },
+    {
+        "q": "What is the main visual sign that flowering has officially started in a photoperiod plant?",
+        "options": ["A. Thick fan leaf growth", "B. New stems appear", "C. White pistils begin to form at nodes", "D. Stem turns purple"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following does NOT help increase yield?",
+        "options": ["A. Defoliation", "B. Proper nutrient ratios", "C. Underwatering in flower", "D. Training techniques like topping"],
+        "a": "C"
+    },
+    {
+        "q": "What is one benefit of using silica supplements in cannabis cultivation?",
+        "options": ["A. Higher THC content", "B. Increased pest attraction", "C. Stronger cell walls and stress resistance", "D. Faster nutrient burn"],
+        "a": "C"
+    },
+    {
+        "q": "What part of the cannabis plant stores the most cannabinoids?",
+        "options": ["A. Xylem", "B. Fan leaves", "C. Stems", "D. Trichome heads"],
+        "a": "D"
+    },
+    {
+        "q": "Why is bud washing sometimes performed after harvest?",
+        "options": ["A. To sterilize seeds", "B. To increase trichome production", "C. To remove dust, debris, or pests before drying", "D. To boost sugar content"],
+        "a": "C"
+    },
+    {
+        "q": "What does a high EC reading in runoff usually indicate?",
+        "options": ["A. Cold roots", "B. Low humidity", "C. Salt buildup and possible overfeeding", "D. Perfect nutrient balance"],
+        "a": "C"
+    },
+    {
+        "q": "Why do some growers prefer dry trimming over wet trimming?",
+        "options": ["A. It’s faster", "B. It preserves trichomes better and slows down the dry", "C. It boosts nitrogen", "D. It prevents stretching"],
+        "a": "B"
+    },
+    {
+        "q": "Which of these is a natural pest control method?",
+        "options": ["A. Neem oil", "B. Hydrogen peroxide", "C. Mycorrhizae", "D. pH up"],
+        "a": "A"
+    },
+    {
+        "q": "What’s the ideal curing environment for storing cannabis long term?",
+        "options": ["A. Bright, warm, humid", "B. Cold, dry, with airflow", "C. Dark, cool (60–65°F), 55–62% RH, airtight containers", "D. Freezer, vacuum sealed"],
+        "a": "C"
+    },
+    {
+        "q": "What is the main reason to maintain negative air pressure in a grow tent?",
+        "options": ["A. Prevent light leaks", "B. Retain CO₂ levels", "C. Control odor and ensure fresh air intake", "D. Reduce nutrient usage"],
+            "a": "C"
+        },
+        {
+            "q": "What does 'topping' accomplish in cannabis plants?",
+        "options": ["A. Speeds up harvest", "B. Eliminates pests", "C. Creates multiple main colas and controls vertical growth", "D. Stimulates trichome production"],
+        "a": "C"
+    },
+    {
+        "q": "What does the presence of clear trichomes typically indicate?",
+        "options": ["A. Harvest-ready potency", "B. Degraded cannabinoids", "C. Immature buds", "D. Mold risk"],
+        "a": "C"
+    },
+    {
+        "q": "Which of these can cause nutrient lockout even if nutrients are present?",
+        "options": ["A. Too much humidity", "B. Improper pH", "C. Cold air", "D. Low light"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the most accurate way to measure ambient CO₂ levels in your grow space?",
+        "options": ["A. Use a digital hygrometer", "B. Use a TDS meter", "C. Use a CO₂ ppm monitor", "D. Use an EC meter"],
+        "a": "C"
+    },
+    {
+        "q": "Why might a grower use horticultural enzymes in a soil or coco grow?",
+        "options": ["A. Raise light intensity", "B. Feed fungal spores", "C. Break down dead root material and improve nutrient absorption", "D. Prevent light burn"],
+        "a": "C"
+    },
+    {
+        "q": "What is the correct way to calibrate a digital pH pen?",
+        "options": ["A. Dip it in water and wipe dry", "B. Place it in soil until stable", "C. Use two-point calibration with pH 4.0 and 7.0 solutions", "D. Let it rest for 24 hours"],
+        "a": "C"
+    },
+    {
+        "q": "What is one of the most common causes of stem discoloration (red or purple) in early growth?",
+        "options": ["A. Perfect conditions", "B. Nitrogen overdose", "C. Genetics or phosphorus deficiency", "D. Excess humidity"],
+        "a": "C"
+    },
+    {
+        "q": "Which of these should NOT be used during the last two weeks before harvest?",
+        "options": ["A. Flushing water", "B. Bloom boosters with high PK", "C. Plain pH-balanced water", "D. Enzyme blends"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the main purpose of mulching around cannabis plants in organic soil grows?",
+        "options": ["A. Increase CO₂ directly", "B. Reflect sunlight to the roots", "C. Retain moisture and protect microbial life", "D. Reduce nitrogen use"],
+        "a": "C"
+    },
+    {
+        "q": "Which light spectrum is most important for compact vegetative growth?",
+        "options": ["A. Red", "B. Green", "C. Blue", "D. Infrared"],
+        "a": "C"
+    },
+    {
+        "q": "What is a major benefit of using living soil in cannabis cultivation?",
+        "options": ["A. Faster flowering", "B. Stronger LED penetration", "C. A self-sustaining microbial ecosystem that feeds the plant naturally", "D. Reduced need for airflow"],
+        "a": "C"
+    },
+    {
+        "q": "What causes the edges of leaves to curl up like a taco in cannabis plants?",
+        "options": ["A. Cold roots", "B. Excess humidity", "C. Heat stress", "D. Too much nitrogen"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the main advantage of using clones over seeds?",
+        "options": ["A. They have higher THC", "B. They flower automatically", "C. They are genetic copies of a known plant and flower faster", "D. They yield larger buds"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following would be the most concerning during mid-flower?",
+        "options": ["A. Purple petioles", "B. Fan leaf yellowing", "C. Light leaks", "D. Leaf tip curling"],
+        "a": "C"
+    },
+    {
+        "q": "How often should you burp curing jars during the first 7–10 days?",
+        "options": ["A. Once every 48 hours", "B. Not at all", "C. Twice daily for 5–10 minutes", "D. Once per week"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal spacing between indoor cannabis plants to reduce mold risk and maximize airflow?",
+        "options": ["A. 2–3 inches", "B. 6–12 inches", "C. 18–24 inches", "D. Touching each other"],
+        "a": "C"
+    },
+    {
+        "q": "Which of these practices will help prevent salt buildup in soil or coco grows?",
+        "options": ["A. Foliar spraying", "B. Keeping pots on cold surfaces", "C. Occasional flush with pH-balanced water", "D. Increasing phosphorus"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the best way to identify the sex of a cannabis plant during early pre-flower?",
+        "options": ["A. Look at leaf shape", "B. Check trichome density", "C. Inspect nodes for pistils or pollen sacs", "D. Look at plant height"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one potential issue with overdefoliating during flower?",
+        "options": ["A. Higher humidity", "B. Reduced CO₂ uptake", "C. Light burn on fan leaves", "D. Slowed bud development due to reduced photosynthesis"],
+        "a": "D"
+    },
+    {
+        "q": "What is the most effective way to identify a fungus gnat infestation early?",
+        "options": ["A. Yellowing of fan leaves", "B. Brown pistils", "C. Tiny flies hovering near the soil surface", "D. Purple stems"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal PPM range for feeding cannabis during late vegetative growth in hydroponics?",
+        "options": ["A. 100–300 ppm", "B. 400–800 ppm", "C. 1000–1500 ppm", "D. 2000+ ppm"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following best defines a photoperiod cannabis strain?",
+        "options": ["A. Flowers based on time from seed", "B. Requires a change in light cycle to initiate flowering", "C. Flowers only under full sunlight", "D. Can’t be cloned"],
+        "a": "B"
+    },
+    {
+        "q": "What is one common cause of yellowing lower leaves during early vegetative growth?",
+        "options": ["A. Phosphorus toxicity", "B. Iron deficiency", "C. Underwatering", "D. Nitrogen deficiency"],
+        "a": "D"
+    },
+    {
+        "q": "What’s the best way to test runoff pH in a soil grow?",
+        "options": ["A. Dig deep and test root zone", "B. Add pH drops directly to dry soil", "C. Water the plant until runoff and test the runoff with a digital pH pen", "D. Use a light meter"],
+        "a": "C"
+    },
+    {
+        "q": "What is the main benefit of using mycorrhizal fungi in organic cannabis cultivation?",
+        "options": ["A. Fights pests", "B. Boosts humidity", "C. Forms a symbiotic relationship with roots to increase nutrient absorption", "D. Enhances smell only"],
+        "a": "C"
+    },
+    {
+        "q": "Which is true about chlorophyll breakdown during the curing process?",
+        "options": ["A. It increases bitterness", "B. It creates more THC", "C. It improves smoke smoothness", "D. It’s only a visual change"],
+        "a": "C"
+    },
+    {
+        "q": "Which environmental factor is most likely to cause bud rot in dense colas?",
+        "options": ["A. Strong light intensity", "B. Cold temperatures", "C. High humidity with poor airflow", "D. High EC in runoff"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the best type of light for clones and early seedlings?",
+        "options": ["A. HPS", "B. Fluorescent or LED with low intensity", "C. UV", "D. Red spectrum CFL"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the primary reason to use black-out tarps or light deprivation outdoors?",
+        "options": ["A. Prevent bugs", "B. Increase THC", "C. Force flowering by reducing daylight hours", "D. Create more airflow"],
+        "a": "C"
+    },
+    {
+        "q": "Which deficiency causes interveinal yellowing on older leaves while the veins stay green?",
+        "options": ["A. Calcium", "B. Magnesium", "C. Iron", "D. Sulfur"],
+        "a": "B"
+    },
+    {
+        "q": "What is the term for the space between nodes on a cannabis stem?",
+        "options": ["A. Petiole", "B. Internode", "C. Bract", "D. Canopy"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the risk of transplanting too late during veg?",
+        "options": ["A. Longer flowering time", "B. Increased THC", "C. Root-bound stress and stunted growth", "D. Increased terpene expression"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following is considered a 'chelated' nutrient?",
+        "options": ["A. Organic compost", "B. Micronutrients bonded to EDTA", "C. Tap water", "D. Humic acid"],
+        "a": "B"
+    },
+    {
+        "q": "What tool can best help monitor VPD (Vapor Pressure Deficit) in a grow room?",
+        "options": ["A. Light meter and EC pen", "B. Humidifier", "C. Thermo-hygrometer and VPD chart", "D. Lux meter and CO₂ sensor"],
+        "a": "C"
+    },
+    {
+        "q": "What part of the cannabis flower contains the ovule and resin glands?",
+        "options": ["A. Pollen sac", "B. Calyx", "C. Pistil", "D. Bract"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following is a common cause of overcompaction in soil grows?",
+        "options": ["A. Fabric pots", "B. Excess root growth and poor aeration", "C. High humidity", "D. Strong light penetration"],
+        "a": "B"
+    },
+    {
+        "q": "What is a typical sign of phosphorus deficiency during flowering?",
+        "options": ["A. Brown spots on lower leaves", "B. Purple stems and leaf dullness", "C. Pale new growth", "D. Leaf curling inward"],
+        "a": "B"
+    },
+    {
+        "q": "What is one advantage of using reverse osmosis (RO) water in cannabis cultivation?",
+        "options": ["A. Increases ppm", "B. Adds natural minerals", "C. Provides a clean baseline free of unknown contaminants", "D. Automatically balances pH"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the role of carbon dioxide (CO₂) in photosynthesis?",
+        "options": ["A. Increases root uptake", "B. Provides flavor", "C. Feeds pests", "D. Fuels sugar production in the plant"],
+            "a": "D"
+        },
+        {
+            "q": "What is the primary function of the stomata on cannabis leaves?",
+        "options": ["A. Absorb nutrients", "B. Trap light for photosynthesis", "C. Exchange gases like CO₂ and O₂", "D. Store chlorophyll"],
+        "a": "C"
+    },
+    {
+        "q": "Which element is a key component of chlorophyll in plants?",
+        "options": ["A. Iron", "B. Nitrogen", "C. Magnesium", "D. Potassium"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal lighting schedule for autoflower strains from start to finish?",
+        "options": ["A. 12/12", "B. 14/10", "C. 18/6 or 20/4", "D. 10/14"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following signs is most associated with iron deficiency?",
+        "options": ["A. Purple stems", "B. Yellowing of new growth while veins remain green", "C. Brown leaf edges", "D. Curling leaves"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the purpose of flushing with plain water in a hydroponic system?",
+        "options": ["A. Increase ppm", "B. Recalibrate the EC meter", "C. Remove excess salts and nutrient buildup", "D. Boost chlorophyll"],
+        "a": "C"
+    },
+    {
+        "q": "Which of these symptoms would most likely appear if a plant is too close to the light?",
+        "options": ["A. Bud rot", "B. Leaf curling down", "C. Bleached tops and taco leaves", "D. Purple veins"],
+        "a": "C"
+    },
+    {
+        "q": "Why are fabric pots often preferred over plastic pots?",
+        "options": ["A. Easier to sterilize", "B. Retain more water", "C. Allow air pruning of roots and improved drainage", "D. Reflect more light"],
+        "a": "C"
+    },
+    {
+        "q": "What is the function of gibberellins in cannabis plants?",
+        "options": ["A. Trigger flowering", "B. Increase resin", "C. Promote stem elongation and seed germination", "D. Prevent nutrient burn"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following could cause pH to drift downward in a hydro reservoir over time?",
+        "options": ["A. Silica buildup", "B. Bacterial activity and root exudates", "C. Warm lights", "D. High humidity"],
+        "a": "B"
+    },
+    {
+        "q": "What is the function of triacontanol, a natural plant growth stimulant sometimes used in cannabis?",
+        "options": ["A. Promotes pest resistance", "B. Increases nutrient lockout", "C. Boosts photosynthesis and overall plant vigor", "D. Lowers EC"],
+        "a": "C"
+    },
+    {
+        "q": "Which cannabis leaf part connects the blade to the main stem?",
+        "options": ["A. Vein", "B. Bract", "C. Petiole", "D. Node"],
+        "a": "C"
+    },
+    {
+        "q": "What happens if you harvest cannabis while trichomes are mostly clear?",
+        "options": ["A. Potency is highest", "B. Terpenes are fully developed", "C. The effect may be weak or more cerebral due to immature cannabinoids", "D. Buds are heavier"],
+        "a": "C"
+    },
+    {
+        "q": "Why is it important to space plants evenly in an indoor grow?",
+        "options": ["A. To maximize root tangling", "B. To increase CO₂ usage", "C. To reduce light stress", "D. To improve airflow and reduce mold risk"],
+        "a": "D"
+    },
+    {
+        "q": "Which nutrient is crucial during early flowering for bud initiation?",
+        "options": ["A. Nitrogen", "B. Calcium", "C. Phosphorus", "D. Magnesium"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the purpose of using a PAR meter?",
+        "options": ["A. Measure air pressure", "B. Measure usable light for photosynthesis", "C. Measure soil temperature", "D. Measure terpene levels"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following pests attacks cannabis roots and is difficult to detect early?",
+        "options": ["A. Thrips", "B. Spider mites", "C. Fungus gnats", "D. Root aphids"],
+        "a": "D"
+    },
+    {
+        "q": "What is the best method to stabilize genetics when breeding cannabis?",
+        "options": ["A. Crossing two random strains", "B. Pollinating only female plants", "C. Backcrossing multiple generations", "D. Harvesting early seeds"],
+        "a": "C"
+    },
+    {
+        "q": "What does “stretch” refer to during the cannabis flowering transition?",
+        "options": ["A. Leaf expansion", "B. Trichome production", "C. Rapid vertical growth during early flower", "D. Light stress"],
+        "a": "C"
+    },
+    {
+        "q": "What is the best way to determine if a nutrient lockout is occurring?",
+        "options": ["A. Smell the buds", "B. Check pH and runoff EC levels", "C. Look for white pistils", "D. Measure humidity"],
+        "a": "B"
+    },
+    {
+        "q": "What is a potential downside of using excess potassium late in flower?",
+        "options": ["A. Increased terpene production", "B. Reduced bud density", "C. Lockout of other nutrients like calcium and magnesium", "D. Faster drying"],
+            "a": "C"
+    },
+    {
+    "q": "What is a common mistake when using pH up/down products?",
+    "options": ["A. Applying them after watering", "B. Mixing directly into dry soil", "C. Adding too much at once without retesting", "D. Using them with RO water"],
+    "a": "C"
+    },
+    {
+    "q": "Which cannabis compound is non-psychoactive but known for anti-inflammatory effects?",
+    "options": ["A. THC", "B. CBC", "C. CBG", "D. CBD"],
+    "a": "D"
+    },
+    {
+    "q": "What is a major visual symptom of heat stress on upper leaves?",
+    "options": ["A. Yellowing between veins", "B. Edges curl upward like tacos", "C. Lower leaves droop", "D. Trichomes disappear"],
+    "a": "B"
+    },
+    {
+    "q": "Why is sulfur important in cannabis cultivation?",
+    "options": ["A. It increases potassium absorption", "B. It’s critical for protein synthesis and terpene development", "C. It lowers EC", "D. It replaces calcium"],
+    "a": "B"
+    },
+    {
+    "q": "What is leaf septoria, and how does it appear?",
+    "options": ["A. Nutrient burn at leaf tips", "B. Mold in buds", "C. Yellow spots with brown centers on leaves", "D. Light bleaching on sugar leaves"],
+    "a": "C"
+    },
+    {
+    "q": "Which cannabis organ contains the highest concentration of trichomes?",
+    "options": ["A. Sugar leaves", "B. Calyxes and bracts", "C. Stems", "D. Roots"],
+    "a": "B"
+    },
+    {
+    "q": "What does a 'flush' runoff EC of 0.2–0.4 usually indicate?",
+    "options": ["A. Nutrient toxicity", "B. High buildup", "C. Clean root zone with minimal salt", "D. pH imbalance"],
+    "a": "C"
+    },
+    {
+    "q": "What happens if a grower repeatedly waters without letting the medium dry properly?",
+    "options": ["A. Boosted growth", "B. Higher THC", "C. Root rot and reduced oxygen availability", "D. Stronger aroma"],
+    "a": "C"
+    },
+    {
+    "q": "Which of the following is considered a plant growth hormone involved in bud formation and cell expansion?",
+    "options": ["A. Auxin", "B. Silica", "C. Humic acid", "D. EDTA"],
+    "a": "A"
+    },
+    {
+    "q": "What is one reason a plant might turn hermaphroditic late in flower?",
+    "options": ["A. Overfeeding phosphorus", "B. Overly stable environment", "C. Excess stress or light leaks", "D. High CO₂"],
+    "a": "C"
+    },
+    {
+    "q": "What is a major sign of potassium deficiency during mid-to-late flower?",
+    "options": ["A. Pale new leaves", "B. Brown or burnt leaf edges", "C. Leaf tips curl upward", "D. Purple pistils"],
+    "a": "B"
+    },
+    {
+    "q": "Which of the following elements is a secondary nutrient, not a micronutrient or macronutrient?",
+    "options": ["A. Copper", "B. Nitrogen", "C. Calcium", "D. Zinc"],
+    "a": "C"
+    },
+    {
+    "q": "Why is CO₂ supplementation only effective in high-intensity lighting environments?",
+    "options": ["A. CO₂ requires low humidity", "B. Without strong light, the plant can’t use the extra CO₂ efficiently", "C. CO₂ works better in the dark", "D. CO₂ raises pH too much under weak lighting"],
+    "a": "B"
+    },
+    {
+    "q": "What’s one natural remedy to deter aphids in an organic garden?",
+    "options": ["A. Hydrogen peroxide", "B. Dish soap and water spray", "C. High NPK fertilizer", "D. Coco coir"],
+    "a": "B"
+    },
+    {
+    "q": "Which condition is ideal for storing cannabis seeds long-term?",
+    "options": ["A. Warm and humid", "B. Cold and dark with low humidity", "C. Bright and dry", "D. Vacuum sealed in bright light"],
+    "a": "B"
+    },
+    {
+    "q": "What is 'super cropping' designed to do?",
+    "options": ["A. Kill lower growth", "B. Increase THC", "C. Stress stems to redirect growth and promote bigger buds", "D. Flush nutrients"],
+    "a": "C"
+    },
+    {
+    "q": "What does aeration in soil promote?",
+    "options": ["A. Increased light absorption", "B. Root oxygen exchange and microbial life", "C. Water retention", "D. Soil compaction"],
+    "a": "B"
+    },
+    {
+    "q": "Which is a common symptom of zinc deficiency?",
+    "options": ["A. Leaf tips curl downward", "B. Pale, twisted new growth and slow development", "C. Purple undersides of leaves", "D. Rust spots on fan leaves"],
+    "a": "B"
+    },
+    {
+    "q": "What is the ideal RH range for cannabis clones to root properly?",
+    "options": ["A. 25–35%", "B. 40–50%", "C. 65–80%", "D. 90–100%"],
+    "a": "C"
+    },
+    {
+    "q": "Which of the following can negatively impact trichome production during late flowering?",
+    "options": ["A. Gradual drop in humidity", "B. UV exposure", "C. Stress from high-intensity heat", "D. Gentle air circulation"],
+    "a": "C"
+    },
+    {
+        "q": "What is the primary function of the cannabis plant's pistils?",
+        "options": ["A. Absorb CO₂", "B. Attract pollinators and catch pollen", "C. Regulate nutrient flow", "D. Support sugar leaves"],
+        "a": "B"
+    },
+    {
+        "q": "Which of these deficiencies is most likely if your plant has weak stems and brown spots during early veg?",
+        "options": ["A. Iron", "B. Calcium", "C. Sulfur", "D. Nitrogen"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the main risk of using too small of a pot size throughout a full grow?",
+        "options": ["A. Rapid flowering", "B. Reduced terpene levels", "C. Root-bound stress and stunted development", "D. Overexposure to light"],
+        "a": "C"
+    },
+    {
+        "q": "When viewed under a microscope, what trichome stage is considered past peak potency?",
+        "options": ["A. Clear", "B. Cloudy", "C. Mostly cloudy with a few amber", "D. Mostly amber"],
+        "a": "D"
+    },
+    {
+        "q": "What is fulvic acid commonly used for in cannabis cultivation?",
+        "options": ["A. Pest control", "B. Humidity buffering", "C. Increasing nutrient uptake and chelation", "D. Root pruning"],
+        "a": "C"
+    },
+    {
+        "q": "Why should foliar sprays be avoided during late flower?",
+        "options": ["A. They boost humidity too much", "B. They lower terpene levels", "C. They can cause mold and reduce bud quality", "D. They slow down flowering"],
+        "a": "C"
+    },
+    {
+        "q": "What causes the stretch phase during early flowering in photoperiod plants?",
+        "options": ["A. Increased airflow", "B. Hormonal shift as plants transition from vegetative to reproductive growth", "C. Higher potassium levels", "D. Light leaks"],
+        "a": "B"
+    },
+    {
+        "q": "What happens if chlorophyll is not properly broken down during curing?",
+        "options": ["A. Buds lose THC", "B. Buds will smell sweet", "C. Smoke becomes harsher and grassy", "D. Flower gets denser"],
+        "a": "C"
+    },
+    {
+        "q": "Which nutrient supports strong flower development, especially in late bloom?",
+        "options": ["A. Nitrogen", "B. Magnesium", "C. Phosphorus", "D. Zinc"],
+        "a": "C"
+    },
+    {
+        "q": "What should be checked first when plants begin showing signs of sudden stress?",
+        "options": ["A. Harvest date", "B. Soil texture", "C. pH and environmental factors", "D. Leaf vein color"],
+        "a": "C"
+    },
+    {
+        "q": "What environmental factor has the greatest influence on transpiration rate in cannabis plants?",
+        "options": ["A. Soil type", "B. Relative humidity", "C. Pot size", "D. Light spectrum"],
+        "a": "B"
+    },
+    {
+        "q": "What does 'hardening off' cannabis clones involve?",
+        "options": ["A. Withholding water to force root growth", "B. Introducing them to stronger light and lower humidity gradually", "C. Topping clones immediately", "D. Feeding high-nitrogen solution"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the most accurate tool for checking airflow at the canopy level?",
+        "options": ["A. Thermometer", "B. CO₂ monitor", "C. Anemometer", "D. Hygrometer"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following light types produces the most heat per watt?",
+        "options": ["A. LED", "B. CFL", "C. Metal Halide (MH)", "D. High-Pressure Sodium (HPS)"],
+        "a": "D"
+    },
+    {
+        "q": "What can cause pH drift in organic soil over time?",
+        "options": ["A. Overwatering only", "B. Synthetic nutrients", "C. Microbial activity and decomposition", "D. Lighting schedule"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following is NOT a micronutrient?",
+        "options": ["A. Manganese", "B. Copper", "C. Zinc", "D. Potassium"],
+        "a": "D"
+    },
+    {
+        "q": "When creating compost tea, why is it important to aerate the mixture?",
+        "options": ["A. To increase CO₂", "B. To boost nitrogen", "C. To feed anaerobic bacteria", "D. To promote beneficial aerobic microbes"],
+        "a": "D"
+    },
+    {
+        "q": "Which environmental condition promotes leaf transpiration?",
+        "options": ["A. High humidity and low temperature", "B. Low humidity and good airflow", "C. Darkness and still air", "D. Low CO₂ and high pH"],
+        "a": "B"
+    },
+    {
+        "q": "What is the primary downside of over-trimming during veg?",
+        "options": ["A. Plants stretch more", "B. Reduced photosynthesis and slower growth", "C. Increased nutrient uptake", "D. Denser buds"],
+        "a": "B"
+    },
+    {
+        "q": "Which tool allows a grower to see the PPFD (photosynthetic photon flux density) at canopy level?",
+        "options": ["A. EC meter", "B. PAR meter", "C. TDS pen", "D. Hygrometer"],
+        "a": "B"
+    },
+    {
+        "q": "What is the primary advantage of deep water culture (DWC) systems?",
+        "options": ["A. Faster terpene development", "B. Higher EC tolerance", "C. Rapid root oxygenation and explosive growth", "D. Natural pest resistance"],
+        "a": "C"
+    },
+    {
+        "q": "Why is it recommended to allow runoff during watering in soil or coco grows?",
+        "options": ["A. Increases humidity", "B. Boosts CO₂", "C. Prevents salt buildup and helps monitor nutrient levels", "D. Promotes pest resistance"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following would be most effective in preventing powdery mildew?",
+        "options": ["A. High nitrogen feed", "B. Strong airflow and humidity control", "C. More phosphorus", "D. UV light exposure during dark cycle"],
+        "a": "B"
+    },
+    {
+        "q": "What is the role of boron in cannabis cultivation?",
+        "options": ["A. Essential for bud color", "B. Crucial for root development and calcium transport", "C. Increases water retention", "D. Enhances chlorophyll"],
+        "a": "B"
+    },
+    {
+        "q": "What happens if runoff pH is consistently below 5.5 in a soil grow?",
+        "options": ["A. Nitrogen becomes more available", "B. Trichome production increases", "C. Nutrient lockouts begin to occur", "D. Magnesium becomes more mobile"],
+        "a": "C"
+    },
+    {
+        "q": "What does 'mainlining' mean in cannabis training?",
+        "options": ["A. Feeding through the stem", "B. Creating a symmetrical manifold for even growth and colas", "C. Cutting all lower branches", "D. Flushing aggressively"],
+        "a": "B"
+    },
+    {
+        "q": "What is one visual sign of light bleaching on cannabis buds?",
+        "options": ["A. Buds turn dark green", "B. Tips of colas appear white or pale", "C. Buds swell faster", "D. Fan leaves droop"],
+        "a": "B"
+    },
+    {
+        "q": "Why are air stones commonly used in hydro systems?",
+        "options": ["A. Lower EC", "B. Add potassium", "C. Oxygenate the nutrient solution", "D. Reduce pH drift"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following nutrients is immobile, meaning symptoms show on new growth first?",
+        "options": ["A. Nitrogen", "B. Potassium", "C. Iron", "D. Magnesium"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the main function of trichomes on the cannabis plant?",
+        "options": ["A. Attract pests", "B. Protect from UV rays and produce cannabinoids", "C. Store water", "D. Create new growth tips"],
+        "a": "B"
+    },
+    {
+        "q": "What’s one advantage of using cover crops in outdoor cannabis cultivation?",
+        "options": ["A. Increases soil temperature", "B. Prevents root rot", "C. Improves soil structure and nutrient cycling", "D. Reduces terpene loss"],
+        "a": "C"
+    },
+    {
+        "q": "What is the first thing a grower should check if leaves start curling and drooping suddenly?",
+        "options": ["A. CO₂ levels", "B. Nutrient schedule", "C. Soil moisture and root zone conditions", "D. Lighting schedule"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the typical PPM range for a flush in coco or hydro before harvest?",
+        "options": ["A. 0–50 ppm", "B. 100–300 ppm", "C. 800–1000 ppm", "D. 1500+ ppm"],
+        "a": "A"
+    },
+    {
+        "q": "What does the term 'node' refer to on a cannabis plant?",
+        "options": ["A. The tip of the main cola", "B. The point where leaves and branches grow from the stem", "C. The base of the taproot", "D. The trichome-rich area on buds"],
+        "a": "B"
+    },
+    {
+        "q": "What is the main danger of not burping jars during the first phase of curing?",
+        "options": ["A. Buds lose smell", "B. Nutrients escape", "C. Mold can form due to trapped moisture", "D. Buds over-dry"],
+        "a": "C"
+    },
+    {
+        "q": "Why is proper drainage essential in cannabis containers?",
+        "options": ["A. Allows roots to stretch", "B. Prevents excess humidity", "C. Reduces salt and water buildup that can cause root problems", "D. Increases CO₂ in soil"],
+        "a": "C"
+    },
+    {
+        "q": "What is the primary risk of using cold water when feeding cannabis?",
+        "options": ["A. It dilutes nutrients", "B. It lowers pH too much", "C. It shocks the roots and slows metabolic function", "D. It attracts pests"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following will help increase terpene retention after drying?",
+        "options": ["A. Drying in light", "B. Drying in a warm room with fans blowing directly on buds", "C. Drying in a cool, dark, slow environment", "D. Drying in an airtight container immediately"],
+        "a": "C"
+    },
+    {
+        "q": "What does the acronym IPM stand for in cannabis cultivation?",
+        "options": ["A. Indoor pH Management", "B. Integrated Pest Management", "C. In-Pot Microbes", "D. Indoor Pressure Maintenance"],
+        "a": "B"
+    },
+    {
+        "q": "What happens if a cannabis plant is kept in vegetative light cycle indefinitely (18/6 or 24/0)?",
+        "options": ["A. It stretches and flowers prematurely", "B. It never enters flower and keeps growing vegetatively", "C. It dies back", "D. It produces seeds"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the primary goal of low-stress training (LST) in cannabis grows?",
+        "options": ["A. Create stress-induced flowering", "B. Increase nutrient uptake", "C. Improve canopy shape and light distribution without damaging the plant", "D. Lower pH levels"],
+        "a": "C"
+    },
+    {
+        "q": "What happens if you harvest cannabis too late after most trichomes have turned amber?",
+        "options": ["A. Higher THC and stronger high", "B. Increased plant stretch", "C. More sedative effects due to THC degrading into CBN", "D. Enhanced terpene preservation"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one reason growers choose autoflower strains?",
+        "options": ["A. They can be cloned more easily", "B. They produce feminized seeds", "C. They begin flowering on their own without light cycle changes", "D. They have higher nitrogen tolerance"],
+        "a": "C"
+    },
+    {
+        "q": "What does a flush typically involve in soil?",
+        "options": ["A. Adding enzymes", "B. Feeding with compost tea", "C. Watering with plain pH-balanced water until significant runoff is achieved", "D. Cutting all fan leaves"],
+        "a": "C"
+    },
+    {
+        "q": "Why is calcium especially important during cannabis growth?",
+        "options": ["A. It produces chlorophyll", "B. It supports cell wall structure and root development", "C. It flushes sodium", "D. It raises pH"],
+        "a": "B"
+    },
+    {
+        "q": "What tool would be best to measure moisture levels deep in the root zone?",
+        "options": ["A. EC meter", "B. Lux meter", "C. Soil probe moisture meter", "D. TDS pen"],
+        "a": "C"
+    },
+    {
+        "q": "Which of these can be a downside of coco coir if not managed properly?",
+        "options": ["A. Overheating", "B. Salt buildup from unbuffered coco", "C. Overproduction of chlorophyll", "D. Attracting spider mites"],
+        "a": "B"
+    },
+    {
+        "q": "When should a grower consider 'topping' a plant?",
+        "options": ["A. During clone rooting", "B. After the first set of fan leaves", "C. After the plant has at least 4–5 healthy nodes", "D. Only in week 4 of flower"],
+        "a": "C"
+    },
+    {
+        "q": "Which cannabis nutrient is critical for chlorophyll production and is often linked to overall plant color?",
+        "options": ["A. Sulfur", "B. Calcium", "C. Magnesium", "D. Iron"],
+        "a": "C"
+    },
+    {
+        "q": "What is the main function of humic acid in organic soil?",
+        "options": ["A. Boost CO₂ absorption", "B. Add silica", "C. Improve nutrient chelation and soil microbial health", "D. Increase THC levels directly"],
+        "a": "C"
+    },
+    {
+        "q": "What does it usually mean if leaves feel dry, crispy, and curl up at the edges?",
+        "options": ["A. Nitrogen deficiency", "B. Overwatering", "C. Heat stress or low humidity", "D. pH lockout"],
+        "a": "C"
+    },
+    {
+        "q": "What is one benefit of using aloe vera in organic cannabis cultivation?",
+        "options": ["A. Increases light absorption", "B. Acts as a rooting hormone and microbial booster", "C. Lowers CO₂ levels", "D. Adds phosphorus directly"],
+        "a": "B"
+    },
+    {
+        "q": "What is the role of phosphorus in cannabis during the flowering stage?",
+        "options": ["A. Increases water retention", "B. Promotes chlorophyll breakdown", "C. Supports bud and root development", "D. Reduces humidity"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following can help improve terpene expression in late flower?",
+        "options": ["A. High humidity", "B. Strong red light and cool nighttime temps", "C. Shortening light hours to 10/14", "D. Raising pH to 7.5"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the purpose of booster fans in large grow rooms?",
+        "options": ["A. Lower CO₂", "B. Reflect light evenly", "C. Help distribute fresh air and eliminate hot spots", "D. Increase humidity"],
+        "a": "C"
+    },
+    {
+        "q": "What happens if your grow room has too much negative pressure?",
+        "options": ["A. Light cycle gets disrupted", "B. Air intake slows and CO₂ drops", "C. Trichomes fall off", "D. Leaf tips turn purple"],
+        "a": "B"
+    },
+    {
+        "q": "What is a true statement about using molasses during flowering?",
+        "options": ["A. It’s a pesticide", "B. It feeds beneficial microbes in organic systems", "C. It should be used in place of phosphorus", "D. It is harmful in all hydro systems"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following symptoms is commonly linked to overwatering?",
+        "options": ["A. Crisp leaves and dry soil", "B. Swollen, droopy leaves and slow growth", "C. Light green tops and burnt tips", "D. Brittle roots"],
+        "a": "B"
+    },
+    {
+        "q": "What is turgor pressure in plant cells responsible for?",
+        "options": ["A. Light reflection", "B. Root expansion", "C. Leaf rigidity and plant structure", "D. Nutrient conversion"],
+        "a": "C"
+    },
+    {
+        "q": "What is the best temperature range during lights-on in flower to optimize growth and terpene retention?",
+        "options": ["A. 60–65°F", "B. 66–72°F", "C. 70–85°F", "D. 88–95°F"],
+        "a": "C"
+    },
+    {
+        "q": "Which technique involves training multiple main colas to grow evenly from a single base structure?",
+        "options": ["A. LST", "B. Mainlining", "C. Cloning", "D. Super cropping"],
+        "a": "B"
+    },
+    {
+        "q": "What’s a common cause of drooping leaves with wet soil?",
+        "options": ["A. Light burn", "B. Calcium deficiency", "C. Overwatering", "D. Potassium excess"],
+        "a": "C"
+    },
+    {
+        "q": "Why is it recommended to keep cannabis in complete darkness during drying?",
+        "options": ["A. Reduces chlorophyll loss", "B. Prevents terpene breakdown caused by light", "C. Boosts yield", "D. Increases fan leaf strength"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the ideal range for curing RH inside airtight jars after the buds are dried?",
+        "options": ["A. 25–35%", "B. 40–50%", "C. 55–65%", "D. 70–80%"],
+        "a": "C"
+    },
+    {
+        "q": "What issue does a high EC reading in runoff typically suggest?",
+        "options": ["A. Over-pruning", "B. Pest resistance", "C. Salt buildup or overfeeding", "D. Low light stress"],
+        "a": "C"
+    },
+    {
+        "q": "What role does silica play in strengthening cannabis plants?",
+        "options": ["A. Boosts terpene profile", "B. Enhances trichome production", "C. Helps cell wall development and structural rigidity", "D. Reduces drying time"],
+        "a": "C"
+    },
+    {
+        "q": "Which type of lighting has the lowest heat output per watt?",
+        "options": ["A. Metal Halide", "B. High-Pressure Sodium", "C. Fluorescent", "D. LED"],
+        "a": "D"
+    },
+    {
+        "q": "What does “cutting back the nitrogen” during flower typically help with?",
+        "options": ["A. Faster stretch", "B. Bud density and resin production", "C. Increased fan leaf size", "D. Avoiding late-flower reveg"],
+        "a": "B"
+    },
+    {
+        "q": "Why should humidity be gradually reduced during late flower?",
+        "options": ["A. Prevent nitrogen buildup", "B. Speed up harvest", "C. Lower mold risk and enhance trichome quality", "D. Reduce CO₂ needs"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following symptoms is most likely caused by low humidity in veg?",
+        "options": ["A. Thick, droopy leaves", "B. Stunted growth and overly thin leaves", "C. Yellowing lower leaves", "D. White powdery coating"],
+        "a": "B"
+    },
+    {
+        "q": "What happens if light leaks occur during a plant’s dark cycle in flower?",
+        "options": ["A. Faster resin production", "B. Bud rot", "C. Reveg or hermaphroditism", "D. Increased chlorophyll"],
+        "a": "C"
+    },
+    {
+        "q": "What is the best action when transplanting a cannabis plant into a larger container?",
+        "options": ["A. Pack the new soil tightly", "B. Transplant in direct light", "C. Water immediately and avoid disturbing the root ball", "D. Feed high-nitrogen nutrients"],
+        "a": "C"
+    },
+    {
+        "q": "Which nutrient is most likely to be locked out in coco if pH drops too low?",
+        "options": ["A. Nitrogen", "B. Magnesium", "C. Phosphorus", "D. Iron"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following best describes “stretch” in cannabis plants?",
+        "options": ["A. A drop in yield", "B. Rapid vertical growth during early flowering", "C. Leaf droop during clone phase", "D. Root expansion in soil"],
+        "a": "B"
+    },
+    {
+        "q": "What does the term “flush point” usually refer to?",
+        "options": ["A. The moment when plants begin flowering", "B. The EC value of runoff that indicates nutrient levels are low enough before harvest", "C. CO₂ reaching 1500 ppm", "D. Reaching 70°F in a dry room"],
+        "a": "B"
+    },
+    {
+        "q": "Which part of the cannabis plant typically shows nutrient deficiency symptoms first for mobile nutrients?",
+        "options": ["A. New growth", "B. Roots", "C. Lower, older leaves", "D. Pistils"],
+        "a": "C"
+    },
+    {
+        "q": "What is the function of a carbon filter in an indoor grow room?",
+        "options": ["A. Remove CO₂", "B. Add oxygen to roots", "C. Eliminate odors by filtering air through activated charcoal", "D. Keep pH levels stable"],
+        "a": "C"
+    },
+    {
+        "q": "Which method is most effective for increasing root mass in veg?",
+        "options": ["A. High humidity", "B. Feeding extra potassium", "C. Using root stimulants and air pruning techniques", "D. Switching to a 10/14 light cycle"],
+        "a": "C"
+    },
+    {
+        "q": "What’s a key benefit of mulching in outdoor cannabis gardens?",
+        "options": ["A. Increases runoff", "B. Reduces terpene loss", "C. Insulates roots and retains moisture", "D. Blocks photosynthesis"],
+        "a": "C"
+    },
+    {
+        "q": "Which lighting schedule will cause photoperiod plants to stay in veg indefinitely?",
+        "options": ["A. 12/12", "B. 14/10", "C. 10/14", "D. 18/6 or 24/0"],
+        "a": "D"
+    },
+    {
+        "q": "What is a key advantage of using beneficial nematodes in organic cannabis grows?",
+        "options": ["A. They boost photosynthesis", "B. They attack harmful soil pests like fungus gnat larvae", "C. They increase pH", "D. They prevent trichome degradation"],
+        "a": "B"
+    },
+    {
+        "q": "What does 'flipping to flower' mean in indoor cannabis growing?",
+        "options": ["A. Switching to bloom nutrients", "B. Transplanting to a larger pot", "C. Changing the light cycle to 12/12 to induce flowering", "D. Cutting all fan leaves"],
+        "a": "C"
+    },
+    {
+        "q": "What is the best way to prevent salt buildup in coco coir systems?",
+        "options": ["A. Increase light exposure", "B. Reduce humidity", "C. Periodic flushing with plain, pH-balanced water", "D. Water less often"],
+        "a": "C"
+    },
+    {
+        "q": "What does CBG (Cannabigerol) primarily serve as in the cannabis plant?",
+        "options": ["A. A sleep aid", "B. A precursor to other cannabinoids like THC and CBD", "C. A terpene enhancer", "D. A light stress compound"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following actions is most likely to cause root binding?",
+        "options": ["A. Using LED lighting", "B. Overwatering", "C. Growing in containers too small for the plant's size", "D. Topping too early"],
+        "a": "C"
+    },
+    {
+        "q": "What is the function of ethylene gas in cannabis plants?",
+        "options": ["A. Promote male development", "B. Trigger seed production", "C. Help regulate ripening and senescence", "D. Increase light stress tolerance"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the purpose of trimming lower growth during early flower (aka lollipopping)?",
+        "options": ["A. Remove nutrient-heavy fan leaves", "B. Direct energy to top buds and increase airflow", "C. Initiate reveg", "D. Decrease chlorophyll"],
+        "a": "B"
+    },
+    {
+        "q": "Which grow technique involves cutting the top growth to create two main colas?",
+        "options": ["A. Defoliation", "B. Topping", "C. LST", "D. Cloning"],
+        "a": "B"
+    },
+    {
+        "q": "What is a potential downside of too much airflow blowing directly on plants?",
+        "options": ["A. Root rot", "B. Heat stress", "C. Windburn and leaf damage", "D. Nitrogen lockout"],
+        "a": "C"
+    },
+    {
+        "q": "Why are living microbes so important in soil-based cannabis systems?",
+        "options": ["A. They boost THC levels directly", "B. They provide light during dark cycles", "C. They help break down organic matter into plant-available nutrients", "D. They reduce CO₂ demand"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal environment to root fresh cannabis clones?",
+        "options": ["A. 55°F, 30% humidity, direct light", "B. 65–75°F, 70–85% humidity, soft indirect light", "C. 80°F, 90% humidity, direct HPS", "D. 90°F, 20% humidity, airflow maxed out"],
+        "a": "B"
+    },
+    {
+        "q": "What does it typically mean if leaves are yellowing evenly from the bottom up during veg?",
+        "options": ["A. Calcium toxicity", "B. Natural senescence", "C. Nitrogen deficiency", "D. Too much light"],
+        "a": "C"
+    },
+    {
+        "q": "What is the purpose of backcrossing in cannabis breeding?",
+        "options": ["A. Shorten flowering time", "B. Increase THC", "C. Stabilize a genetic trait by breeding with a parent", "D. Create polyhybrids"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following is a sign of a healthy microbial population in living soil?",
+        "options": ["A. Stagnant water", "B. White fungal threads and strong earthy smell", "C. Dry crust on soil", "D. Green algae coating"],
+        "a": "B"
+    },
+    {
+        "q": "What effect does high night-time temperature have during flowering?",
+        "options": ["A. Increased stretch", "B. More potent buds", "C. Reduced color expression and terpene retention", "D. Boosted photosynthesis"],
+        "a": "C"
+    },
+    {
+        "q": "Which grow container type is best for air pruning roots and preventing circling?",
+        "options": ["A. Plastic nursery pots", "B. Clay pots", "C. Fabric pots", "D. Glass containers"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the purpose of using a light mover in large indoor grows?",
+        "options": ["A. Increase trichome density", "B. Prevent mold", "C. Distribute light more evenly and reduce hot spots", "D. Feed CO₂"],
+        "a": "C"
+    },
+    {
+        "q": "What causes 'fox-tailing' in cannabis flowers?",
+        "options": ["A. Cold roots", "B. Light stress or genetics", "C. Excess nitrogen", "D. Early harvest"],
+        "a": "B"
+    },
+    {
+        "q": "Which of these should NOT be added to compost tea during brewing?",
+        "options": ["A. Unsulfured molasses", "B. Mycorrhizal fungi", "C. Hydrogen peroxide", "D. Worm castings"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal EC range for flowering in coco/hydro systems (mid-bloom)?",
+        "options": ["A. 0.2–0.5", "B. 1.2–2.0", "C. 2.5–3.5", "D. 4.0+"],
+        "a": "B"
+    },
+    {
+        "q": "What is the most common cause of 'tip burn' on cannabis leaves?",
+        "options": ["A. Low humidity", "B. Overfeeding nutrients, especially during early flower", "C. Excess airflow", "D. Flushing too late"],
+        "a": "B"
+    },
+    {
+        "q": "What does a sulfur deficiency typically look like on a cannabis plant?",
+        "options": ["A. Yellowing starts from the tips of lower leaves", "B. Yellowing starts on new growth, often with overall pale appearance", "C. Purple stems and red veins", "D. Interveinal striping"],
+        "a": "B"
+    },
+    {
+        "q": "What’s one risk of transplanting into a container that is too large too early?",
+        "options": ["A. Excessive stretching", "B. Root-bound development", "C. Overwatering and poor root zone oxygenation", "D. Slowed nutrient uptake due to root pruning"],
+        "a": "C"
+    },
+    {
+        "q": "What does the “stretch phase” of flowering typically last?",
+        "options": ["A. 24–48 hours", "B. 1 week", "C. 2–3 weeks after flipping to 12/12", "D. Until trichomes appear"],
+        "a": "C"
+    },
+    {
+        "q": "What is the main risk of a grow tent having insufficient negative pressure?",
+        "options": ["A. Overfeeding", "B. Mold-resistant airflow", "C. Odors escaping the tent and poor intake airflow", "D. Too much water retention"],
+        "a": "C"
+    },
+    {
+        "q": "Which terpene is most commonly associated with sedating or relaxing effects?",
+        "options": ["A. Limonene", "B. Myrcene", "C. Pinene", "D. Terpinolene"],
+        "a": "B"
+    },
+    {
+        "q": "Which light cycle is ideal for keeping mother plants in a constant veg state?",
+        "options": ["A. 12/12", "B. 10/14", "C. 18/6 or 20/4", "D. 24/0 only"],
+        "a": "C"
+    },
+    {
+        "q": "What type of deficiency may cause leaf edges to appear scorched or rusted during flowering?",
+        "options": ["A. Nitrogen", "B. Potassium", "C. Zinc", "D. Calcium"],
+        "a": "B"
+    },
+    {
+        "q": "Why is it important to let cannabis roots “search” for water between feedings?",
+        "options": ["A. To increase resin", "B. To enhance sugar leaf development", "C. To promote strong root structure and oxygen uptake", "D. To reduce potassium demand"],
+        "a": "C"
+    },
+    {
+        "q": "What role do bracts play in the cannabis flower?",
+        "options": ["A. They provide shade to roots", "B. They store sugars for photosynthesis", "C. They protect reproductive parts and contain trichomes", "D. They carry chlorophyll to fan leaves"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the ideal drying temperature range to best preserve terpenes and cannabinoids?",
+        "options": ["A. 55–60°F", "B. 60–70°F", "C. 75–85°F", "D. 90°F+"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following is a macronutrient required in the highest quantity during veg?",
+        "options": ["A. Iron", "B. Nitrogen", "C. Calcium", "D. Sulfur"],
+        "a": "B"
+    },
+    {
+        "q": "What does it mean when a cannabis plant has “damping off”?",
+        "options": ["A. The stalk at soil level becomes soft, thin, and collapses", "B. The leaves turn silver", "C. Buds become too dense", "D. Pistils die early"],
+        "a": "A"
+    },
+    {
+        "q": "What’s a sign of successful super cropping?",
+        "options": ["A. Hollow stems", "B. Vertical stalks only", "C. Bent knuckles with stronger lateral growth", "D. Yellowing at top growth"],
+        "a": "C"
+    },
+    {
+        "q": "What happens if you feed unbuffered coco without calcium/magnesium supplements?",
+        "options": ["A. Roots will harden", "B. Coco will absorb calcium and magnesium, leading to deficiency in the plant", "C. Coco will become hydrophobic", "D. pH will instantly rise to 8.0"],
+        "a": "B"
+    },
+    {
+        "q": "Which lighting color spectrum is most responsible for flower initiation?",
+        "options": ["A. UV", "B. Blue", "C. Red", "D. Green"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following would most likely cause a sour or ammonia smell during curing?",
+        "options": ["A. Overdrying", "B. Overfeeding bloom nutrients", "C. Jarred too wet without proper burping", "D. UV exposure during flower"],
+        "a": "C"
+    },
+    {
+        "q": "What is the main purpose of a Scrog (Screen of Green) setup?",
+        "options": ["A. Increase watering consistency", "B. Increase humidity at canopy level", "C. Maximize yield by maintaining an even canopy and exposing all bud sites to light", "D. Improve drainage"],
+        "a": "C"
+    },
+    {
+        "q": "What is a sign of light deprivation success in outdoor photoperiod plants?",
+        "options": ["A. Increased branching", "B. Stretch stops and pistils begin forming earlier than expected", "C. More chlorophyll in fan leaves", "D. Shorter day length"],
+        "a": "B"
+    },
+    {
+        "q": "What type of nutrient is manganese, and what is its role?",
+        "options": ["A. Macronutrient; boosts trichomes", "B. Micronutrient; important for enzyme systems and photosynthesis", "C. Secondary nutrient; buffers pH", "D. Growth regulator; increases flowering"],
+        "a": "B"
+    },
+    {
+        "q": "What is the purpose of “burping” curing jars in the first 1–2 weeks?",
+        "options": ["A. Increase bud size", "B. Reintroduce moisture", "C. Release excess humidity and gases to prevent mold", "D. Remove fan leaves"],
+        "a": "C"
+    },
+    {
+        "q": "Which medium retains the most water by volume?",
+        "options": ["A. Perlite", "B. Vermiculite", "C. Coco coir", "D. Rockwool"],
+        "a": "B"
+    },
+    {
+        "q": "Why do growers avoid using clear containers for cannabis roots?",
+        "options": ["A. They increase airflow too much", "B. They cause algae growth and light damage to roots", "C. They block oxygen", "D. They overheat quickly"],
+        "a": "B"
+    },
+    {
+        "q": "Which terpene is commonly found in citrus-smelling strains and has uplifting effects?",
+        "options": ["A. Linalool", "B. Myrcene", "C. Caryophyllene", "D. Limonene"],
+        "a": "D"
+    },
+    {
+        "q": "What happens if humidity stays above 65% in late flower without proper airflow?",
+        "options": ["A. Increased nitrogen uptake", "B. Faster ripening", "C. Higher CO₂ absorption", "D. Mold and bud rot risk increases"],
+        "a": "D"
+    },
+    {
+        "q": "What’s a common reason for twisted new growth in seedlings?",
+        "options": ["A. Genetic mutation", "B. Light stress", "C. Overwatering", "D. pH imbalance"],
+        "a": "D"
+    },
+    {
+        "q": "What’s the main risk of skipping the cure and going straight from dry to storage?",
+        "options": ["A. Trichome loss", "B. Chlorophyll stays locked in, resulting in harsh smoke and reduced flavor", "C. Faster potency", "D. Denser buds"],
+        "a": "B"
+    },
+    {
+        "q": "What does a high runoff EC with light feeding usually indicate?",
+        "options": ["A. Nutrient deficiency", "B. Salt buildup in the root zone", "C. Overwatering", "D. Nitrogen toxicity"],
+        "a": "B"
+    },
+    {
+        "q": "What is one reason growers may choose to defoliate during early flower?",
+        "options": ["A. Reduce chlorophyll", "B. Speed up pistil growth", "C. Improve light penetration and airflow to bud sites", "D. Promote foxtailing"],
+        "a": "C"
+    },
+    {
+        "q": "What is 'hydrophobic soil', and how does it affect watering?",
+        "options": ["A. Soil that attracts pests", "B. Soil that retains too much salt", "C. Soil that repels water, causing runoff before full absorption", "D. Soil that boosts root growth"],
+        "a": "C"
+    },
+    {
+        "q": "What causes 'leaf tacoing' (edges curling upward) in veg or flower?",
+        "options": ["A. Overwatering", "B. Potassium deficiency", "C. Heat or light stress", "D. Sulfur toxicity"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the main benefit of using mycorrhizal fungi during transplant?",
+        "options": ["A. Kill bacteria", "B. Trigger flower", "C. Form symbiotic relationships that improve nutrient uptake", "D. Increase terpene evaporation"],
+        "a": "C"
+    },
+    {
+        "q": "Why do growers use silica supplements throughout veg and early flower?",
+        "options": ["A. Increase leaf color", "B. Boost calcium uptake", "C. Strengthen stems and improve resistance to pests and stress", "D. Flush salts"],
+        "a": "C"
+    },
+    {
+        "q": "What happens if cannabis is dried too fast?",
+        "options": ["A. Increased terpene content", "B. Mold risk", "C. Harsh taste and chlorophyll is not broken down", "D. Higher yield"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the purpose of canopy management in a grow space?",
+        "options": ["A. Increase nitrogen mobility", "B. Keep light uniform, improve airflow, and reduce mold risk", "C. Prevent nutrient runoff", "D. Increase chlorophyll content"],
+        "a": "B"
+    },
+    {
+        "q": "What is one downside of using tap water in a hydroponic setup without pre-treatment?",
+        "options": ["A. It causes algae instantly", "B. Tap water lacks EC", "C. Chlorine or chloramines can harm beneficial microbes or root health", "D. It lowers terpene levels"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the best way to avoid wind burn in an indoor grow?",
+        "options": ["A. Use fans directly on plants", "B. Keep airflow low", "C. Allow airflow to circulate around, not directly on, the canopy", "D. Reduce humidity"],
+        "a": "C"
+    },
+    {
+        "q": "What does a foxtailed bud usually look like?",
+        "options": ["A. Pale and fluffy with no trichomes", "B. Elongated calyxes stacking unevenly, often in spirals", "C. Compact with heavy pistils", "D. Covered in brown hairs"],
+        "a": "B"
+    },
+    {
+        "q": "What does pH 'lockout' mean?",
+        "options": ["A. CO₂ levels are too low for uptake", "B. Plant refuses to flower", "C. Nutrients are present but unavailable to the plant due to pH imbalance", "D. Roots are sealed off"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one sign your buds were jarred too early after drying?",
+        "options": ["A. Strong pine scent", "B. Buds feel crisp", "C. Ammonia or grass smell and moisture buildup", "D. White ash when burned"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the primary advantage of using RO (reverse osmosis) water in cannabis cultivation?",
+        "options": ["A. Increases humidity", "B. Adds calcium and magnesium", "C. Provides a clean, neutral baseline free of unknown minerals", "D. Makes water more acidic"],
+        "a": "C"
+    },
+    {
+        "q": "What does it usually mean when pistils are turning brown early in flower?",
+        "options": ["A. Ideal harvest time", "B. pH is perfect", "C. Light or nutrient stress, pollination, or environmental shock", "D. Buds are mold-resistant"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the most likely cause of drooping leaves with dry soil?",
+        "options": ["A. Potassium toxicity", "B. Overwatering", "C. Underwatering and root dehydration", "D. pH lockout"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal method for adding microbes to an organic grow?",
+        "options": ["A. Add them directly into dry medium", "B. Apply them with compost tea or microbe-rich water", "C. Use during flushing", "D. Spray during lights-on"],
+        "a": "B"
+    },
+    {
+        "q": "What’s a major sign of root rot in cannabis plants?",
+        "options": ["A. White fluffy roots", "B. Strong, earthy smell", "C. Dark, slimy roots and drooping despite moist soil", "D. Rapid growth"],
+        "a": "C"
+    },
+    {
+        "q": "What’s a potential issue caused by cold root zone temperatures?",
+        "options": ["A. Nutrient lockout and slowed metabolism", "B. Increased THC", "C. Faster flowering", "D. Enhanced CO₂ uptake"],
+        "a": "A"
+    },
+    {
+        "q": "What is the purpose of molasses in compost tea or organic soil?",
+        "options": ["A. Raise pH", "B. Feed beneficial microbes", "C. Add direct potassium", "D. Kill pathogens"],
+        "a": "B"
+    },
+    {
+        "q": "What is the best way to monitor CO₂ effectiveness in a sealed grow?",
+        "options": ["A. Look at leaf color", "B. Check RH levels", "C. Use a CO₂ ppm monitor at canopy height", "D. Weigh the plant"],
+        "a": "C"
+    },
+    {
+        "q": "What role do terpenes play in the cannabis plant besides aroma?",
+        "options": ["A. Absorb nutrients", "B. Attract UV rays", "C. Serve as plant defense compounds against pests and pathogens", "D. Lower THC"],
+        "a": "C"
+    },
+    {
+        "q": "What is the effect of using cold water right before lights-on?",
+        "options": ["A. Boosts flowering", "B. Can shock roots and temporarily stunt uptake", "C. Improves photosynthesis", "D. Increases nitrogen mobility"],
+        "a": "B"
+    },
+    {
+        "q": "What is the benefit of using a bluelab combo meter in a grow setup?",
+        "options": ["A. Measures trichomes", "B. Calculates THC per bud", "C. Measures pH, EC, and temperature in one device", "D. Times light cycles"],
+        "a": "C"
+    },
+    {
+        "q": "Why should growers avoid spraying foliar nutrients during lights-on in high intensity setups?",
+        "options": ["A. It increases CO₂", "B. Leaves become waterproof", "C. Water droplets can magnify light and burn leaves", "D. It lowers pH"],
+        "a": "C"
+    },
+    {
+        "q": "What does it mean when cannabis buds feel too light and airy at harvest?",
+        "options": ["A. They're overcured", "B. Heat stress, lack of light, or poor genetics caused poor bud density", "C. They’re higher in THC", "D. They’ve been flushed too long"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the primary role of potassium in cannabis during flowering?",
+        "options": ["A. Trichome production", "B. Photosynthesis only", "C. Helps with water regulation, sugar transport, and bud development", "D. Initiates light stress response"],
+        "a": "C"
+    },
+    {
+        "q": "Which pest is most likely to cause speckled, silver damage on upper leaf surfaces?",
+        "options": ["A. Aphids", "B. Fungus gnats", "C. Thrips", "D. Root aphids"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following signals a ready-to-harvest plant under magnification?",
+        "options": ["A. Clear trichomes", "B. Mostly cloudy trichomes with some amber", "C. Purple fan leaves", "D. Bent pistils"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the purpose of “topping off” coco or soil with fresh media during late veg?",
+        "options": ["A. Trap heat", "B. Trigger flowering", "C. Add fresh nutrients, microbes, or root coverage", "D. Reduce light absorption"],
+        "a": "C"
+    },
+    {
+        "q": "What is one benefit of running a dry back cycle in coco coir?",
+        "options": ["A. Higher humidity", "B. Improved microbial activity", "C. Better root oxygenation and less chance of overwatering", "D. Increased salt retention"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one danger of over-trimming sugar leaves during flower?",
+        "options": ["A. Increased nitrogen burn", "B. Reduced nutrient storage and slowed bud growth", "C. Bud rot", "D. Increased EC"],
+        "a": "B"
+    },
+    {
+        "q": "What should be done if you accidentally overfed nutrients and EC is extremely high in runoff?",
+        "options": ["A. Raise the light", "B. Flush with plain pH-balanced water", "C. Add potassium", "D. Lower RH"],
+        "a": "B"
+    },
+    {
+        "q": "What’s a good rule of thumb for bud drying duration in ideal conditions?",
+        "options": ["A. 1–2 days", "B. 3–5 days", "C. 7–14 days", "D. 30+ days"],
+        "a": "C"
+    },
+    {
+        "q": "What is a common mistake when checking trichomes with a loupe or microscope?",
+        "options": ["A. Looking only at sugar leaves instead of calyxes", "B. Measuring pH at the same time", "C. Not turning the plant", "D. Checking during lights-off"],
+        "a": "A"
+    },
+    {
+        "q": "What happens if relative humidity is too low during veg?",
+        "options": ["A. Faster flower formation", "B. Enhanced terpene profile", "C. Slower growth and more water uptake stress", "D. Increased nitrogen retention"],
+        "a": "C"
+    },
+    {
+        "q": "What is the role of enzymes in cannabis nutrient blends?",
+        "options": ["A. Break down organic material and promote root health", "B. Boost sugar levels in leaves", "C. Add silica directly", "D. Eliminate light stress"],
+        "a": "A"
+    },
+    {
+        "q": "What deficiency is often associated with interveinal yellowing on upper leaves during veg?",
+        "options": ["A. Calcium", "B. Magnesium", "C. Iron", "D. Nitrogen"],
+        "a": "C"
+    },
+    {
+        "q": "What does 'runoff' refer to in cannabis cultivation?",
+        "options": ["A. The water and nutrient solution that drains from the pot after feeding", "B. Water that evaporates from the leaves", "C. Leftover CO₂", "D. Early harvesting"],
+        "a": "A"
+    },
+    {
+        "q": "Which nutrient is mobile, meaning the plant can move it from older to newer leaves?",
+        "options": ["A. Calcium", "B. Sulfur", "C. Iron", "D. Nitrogen"],
+        "a": "D"
+    },
+    {
+        "q": "What technique involves removing lower bud sites and small branches to focus energy on top colas?",
+        "options": ["A. Topping", "B. Super cropping", "C. Lollipopping", "D. ScrOG"],
+        "a": "C"
+    },
+    {
+        "q": "What is a common trait of a healthy, properly rooted clone?",
+        "options": ["A. Purple stems", "B. Wilting", "C. Bright green top growth with firm leaves", "D. Dry root tips"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one reason to avoid overcrowding in indoor cannabis grows?",
+        "options": ["A. Higher leaf temperature", "B. Better terpene retention", "C. Increased CO₂ use", "D. Poor airflow, mold risk, and uneven light distribution"],
+        "a": "D"
+    },
+    {
+        "q": "What is one downside of overfeeding nitrogen during early flower?",
+        "options": ["A. Buds form too fast", "B. Plants stretch less", "C. Delayed bud development and excess leafy growth", "D. More trichome heads form"],
+        "a": "C"
+    },
+    {
+        "q": "Which nutrient is often linked to hollow stems or brittle branches?",
+        "options": ["A. Magnesium", "B. Calcium", "C. Phosphorus", "D. Zinc"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the recommended light schedule for vegging photoperiod plants?",
+        "options": ["A. 10/14", "B. 12/12", "C. 16/8 to 24/0", "D. 8/16"],
+        "a": "C"
+    },
+    {
+        "q": "What is a potential risk of overusing foliar sprays?",
+        "options": ["A. pH lockout", "B. Leaf tissue damage or mold", "C. Light stress reduction", "D. Shorter flowering"],
+        "a": "B"
+    },
+    {
+        "q": "Which deficiency causes leaf edges to appear scorched or burnt-looking in mid-to-late flower?",
+        "options": ["A. Nitrogen", "B. Potassium", "C. Iron", "D. Boron"],
+        "a": "B"
+    },
+    {
+        "q": "What is the role of humic acid in soil-based cannabis grows?",
+        "options": ["A. Acts as a foliar pesticide", "B. Increases chlorophyll", "C. Improves nutrient availability and microbial health", "D. Lowers VPD"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one reason cannabis grown in cold temps may show purple or dark pigmentation?",
+        "options": ["A. Boosted nitrogen", "B. Chlorophyll overproduction", "C. Anthocyanin expression triggered by cold", "D. Magnesium toxicity"],
+        "a": "C"
+    },
+    {
+        "q": "What is the most accurate way to monitor root zone pH?",
+        "options": ["A. Spray foliage", "B. Test run-off or use a soil pH probe", "C. Touch the topsoil", "D. Look at leaf size"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following does NOT directly impact VPD?",
+        "options": ["A. Air temperature", "B. Relative humidity", "C. Leaf surface temperature", "D. Soil pH"],
+        "a": "D"
+    },
+    {
+        "q": "What’s a common sign of light bleaching in cannabis colas?",
+        "options": ["A. Purple pistils", "B. Pale or white bud tops despite otherwise healthy plants", "C. Fan leaves drying out", "D. Thick stems only"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the best way to identify a magnesium deficiency?",
+        "options": ["A. Brown leaf tips", "B. Yellowing between veins on older leaves", "C. Purple stems", "D. Wilting new growth"],
+        "a": "B"
+    },
+    {
+        "q": "What causes root-bound symptoms in container-grown plants?",
+        "options": ["A. Overwatering", "B. Roots circling the pot with limited room to expand", "C. Too much light exposure", "D. Low humidity"],
+        "a": "B"
+    },
+    {
+        "q": "Which of the following improves oxygen availability in the root zone?",
+        "options": ["A. Cold air at canopy level", "B. Topdressing compost", "C. Aerated medium like coco + perlite or fabric pots", "D. Reducing pH"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one way to prevent hermaphroditism in cannabis?",
+        "options": ["A. Increase watering", "B. Keep light schedule and environment stable without stress", "C. Use high-nitrogen feeds", "D. Trim all fan leaves"],
+        "a": "B"
+    },
+    {
+        "q": "What is the ideal RH range for late flowering to reduce mold risk?",
+        "options": ["A. 70–80%", "B. 60–70%", "C. 45–55%", "D. 30–35%"],
+        "a": "C"
+    },
+    {
+        "q": "What’s a major difference between LEDs and HPS lights?",
+        "options": ["A. LEDs produce more heat", "B. HPS uses less energy", "C. LEDs are more energy efficient and produce less radiant heat", "D. HPS increases microbial life"],
+        "a": "C"
+    },
+    {
+        "q": "What should you do if you see white powdery mildew forming in a grow room?",
+        "options": ["A. Increase humidity", "B. Spray water", "C. Remove infected leaves and apply a foliar treatment immediately", "D. Turn off fans"],
+        "a": "C"
+    },
+    {
+        "q": "Which element helps transport sugars and regulate water in cannabis plants?",
+        "options": ["A. Phosphorus", "B. Iron", "C. Potassium", "D. Zinc"],
+        "a": "C"
+    },
+    {
+        "q": "What is a common cause of leaf clawing (leaves curling downward like claws)?",
+        "options": ["A. Low light", "B. High nitrogen levels", "C. Underwatering", "D. Calcium lockout"],
+        "a": "B"
+    },
+    {
+        "q": "What is a recommended method to increase bud density indoors?",
+        "options": ["A. Use 24-hour light during flower", "B. Increase airflow", "C. Maximize light intensity, proper feeding, and VPD control", "D. Transplant after stretch"],
+        "a": "C"
+    },
+    {
+        "q": "What does it mean if leaves turn yellow starting at the tips and move inward during early flower?",
+        "options": ["A. Nitrogen deficiency", "B. Overwatering", "C. Light bleaching", "D. Potassium deficiency"],
+        "a": "D"
+    },
+    {
+        "q": "What is the function of boron in cannabis plants?",
+        "options": ["A. Increases terpene production", "B. Supports cell wall formation and reproductive development", "C. Boosts photosynthesis", "D. Reduces pH in the root zone"],
+        "a": "B"
+    },
+    {
+        "q": "What tool is best for checking the EC or ppm of your nutrient solution?",
+        "options": ["A. Lux meter", "B. TDS meter or EC meter", "C. CO₂ sensor", "D. Moisture probe"],
+        "a": "B"
+    },
+    {
+        "q": "What is the main benefit of defoliating during week 2 of flower?",
+        "options": ["A. Reduce nitrogen uptake", "B. Promote reveg", "C. Improve airflow and light penetration to developing bud sites", "D. Boost chlorophyll"],
+        "a": "C"
+    },
+    {
+        "q": "What happens if you feed a cannabis plant before the medium fully dries (in coco)?",
+        "options": ["A. Enhanced growth", "B. Increased yield", "C. Risk of root issues due to poor oxygen availability", "D. Higher terpene content"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the ideal leaf surface temperature (LST) range during lights-on for optimal photosynthesis?",
+        "options": ["A. 55–60°F", "B. 65–70°F", "C. 72–78°F", "D. 85–90°F"],
+        "a": "C"
+    },
+    {
+        "q": "What issue is likely if new leaves emerge twisted or mutated without signs of pests?",
+        "options": ["A. Cal/Mag deficiency", "B. High EC", "C. pH imbalance or genetic mutation", "D. Potassium toxicity"],
+        "a": "C"
+    },
+    {
+        "q": "What does “flower stacking” refer to?",
+        "options": ["A. Cloning during flower", "B. Buds developing along the stem in dense clusters", "C. Lining up colas for harvest", "D. Stretching during preflower"],
+        "a": "B"
+    },
+    {
+        "q": "What’s the effect of overcrowding colas in flower without spacing or airflow?",
+        "options": ["A. Faster dry", "B. Higher trichome retention", "C. Increased chance of bud rot and larfy buds", "D. More even canopy"],
+        "a": "C"
+    },
+    {
+        "q": "What should you always check before increasing nutrient strength during flower?",
+        "options": ["A. Plant age", "B. Number of colas", "C. Runoff EC and overall plant response", "D. Daylight hours"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one common cause of pH rising over time in a hydro reservoir?",
+        "options": ["A. Cold temperatures", "B. Salt buildup", "C. Microbial activity and nutrient uptake imbalance", "D. Too much potassium"],
+        "a": "C"
+    },
+    {
+        "q": "What’s a symptom of calcium deficiency in cannabis plants?",
+        "options": ["A. Large fan leaves turning yellow", "B. Leaf tips curling up", "C. Rust spots and weak stems in fast-growing areas", "D. Purple undersides of leaves"],
+        "a": "C"
+    },
+    {
+        "q": "What is the best method to calibrate a TDS or EC meter?",
+        "options": ["A. Tap water and bleach", "B. Soil slurry and pH down", "C. Calibration solution specific to the device", "D. Just wipe it clean"],
+        "a": "C"
+    },
+    {
+        "q": "What happens if a flowering plant receives light leaks at night?",
+        "options": ["A. Speeds up harvest", "B. Increases root zone oxygen", "C. Stress that may lead to hermaphroditism or reveg", "D. Boosts resin production"],
+        "a": "C"
+    },
+    {
+        "q": "What does “chlorosis” mean in cannabis diagnosis?",
+        "options": ["A. Leaf drop due to high humidity", "B. Twisting of new growth", "C. Yellowing of leaf tissue due to lack of chlorophyll", "D. Brown trichomes"],
+        "a": "C"
+    },
+    {
+        "q": "What’s one reason buds dry too fast even if room temps are correct?",
+        "options": ["A. Low light", "B. High humidity", "C. Too much airflow directly on hanging buds", "D. Not flushing before harvest"],
+        "a": "C"
+    },
+    {
+        "q": "Which of the following micronutrients is required in very small amounts but is vital for growth?",
+        "options": ["A. Potassium", "B. Manganese", "C. Calcium", "D. Nitrogen"],
+        "a": "B"
+    },
+    {
+        "q": "What’s a good practice to improve bud structure and uniformity indoors?",
+        "options": ["A. Water less often", "B. Use blue spectrum only", "C. Maintain an even canopy with proper pruning and light coverage", "D. Keep RH above 70%"],
+        "a": "C"
+    },
+    {
+        "q": "What’s a quick test to detect powdery mildew on leaves?",
+        "options": ["A. Spray water and look for shimmer", "B. Rub leaf gently and look for white residue that smears", "C. Smell for pine scent", "D. Check pH of runoff"],
+        "a": "B"
+    },
+    {
+        "q": "Why is air exchange critical in sealed indoor rooms?",
+        "options": ["A. It lowers leaf temperature", "B. It raises EC", "C. It refreshes CO₂, regulates humidity, and controls temperature", "D. It helps roots photosynthesize"],
+        "a": "C"
+    },
+    {
+        "q": "What is a common reason for fluffy or airy buds in indoor grows?",
+        "options": ["A. Low humidity during veg", "B. Overfeeding potassium", "C. Weak lighting intensity and poor environmental control", "D. Early defoliation"],
+        "a": "C"
+    },
+    {
+        "q": "What happens when a cannabis plant becomes root-bound?",
+        "options": ["A. It flowers automatically", "B. Water drains faster", "C. Growth slows, leaves may yellow, and roots circle the pot", "D. pH becomes neutral"],
+        "a": "C"
+    },
+    {
+        "q": "What is the ideal VPD range for flowering cannabis?",
+        "options": ["A. 0.4–0.6 kPa", "B. 0.7–1.1 kPa", "C. 1.5–2.0 kPa", "D. 2.5+ kPa"],
+        "a": "B"
+    },
+    {
+        "q": "What is the function of fan leaves in cannabis plants?",
+        "options": ["A. Pollination", "B. Trap humidity", "C. Photosynthesis and nutrient storage", "D. Reflect light"],
+        "a": "C"
+    },
+    {
+        "q": "What is one way to speed up drying without losing terpene quality?",
+        "options": ["A. Use high heat and fans", "B. Hang in sunlight", "C. Slightly increase airflow in a dark room at 60–65°F", "D. Jar early and burp longer"],
+        "a": "C"
+    },
+    {
+        "q": "Why is canopy uniformity important in indoor grows?",
+        "options": ["A. Increases stretch", "B. Helps roots grow faster", "C. Ensures even light distribution and maximizes yield", "D. Prevents nitrogen burn"],
+        "a": "C"
+    },
+    {
+        "q": "What is a typical harvest indicator besides trichome color?",
+        "options": ["A. Fan leaf drop", "B. Soil hardness", "C. Pistils turning orange/brown and curling in", "D. Stretch restarting"],
+        "a": "C"
+    },
+    {
+        "q": "What can EC spikes in runoff indicate?",
+        "options": ["A. Root pests", "B. High terpene content", "C. Nutrient or salt buildup", "D. Too much airflow"],
+        "a": "C"
+    },
+    {
+        "q": "Which environmental issue most contributes to bud rot?",
+        "options": ["A. Low temps", "B. High light intensity", "C. High humidity with poor airflow", "D. Overfeeding silica"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the best way to test for deficiencies vs lockout?",
+        "options": ["A. Use a light meter", "B. Measure pH and EC of runoff to see if nutrients are present but inaccessible", "C. Smell the roots", "D. Wait until flower"],
+        "a": "B"
+    },
+    {
+        "q": "Why should you avoid using high-nitrogen nutrients in late flower?",
+        "options": ["A. Nitrogen turns into sugar", "B. It causes leaf tips to burn", "C. Excess nitrogen can lead to leafy buds and reduced flavor", "D. It boosts potassium too much"],
+        "a": "C"
+    },
+    {
+        "q": "What’s a good reason to top a cannabis plant in veg?",
+        "options": ["A. Boost nitrogen", "B. Promote side branching and control vertical height", "C. Increase EC", "D. Improve VPD"],
+        "a": "B"
+    },
+    {
+        "q": "What does it mean if runoff pH is significantly lower than input pH?",
+        "options": ["A. Too much CO₂", "B. Nutrient lockout is likely due to acidic media", "C. Plant is flowering too fast", "D. Light stress"],
+        "a": "B"
+    },
+    {
+        "q": "Which method helps ensure even bud development across an indoor canopy?",
+        "options": ["A. Use only one light", "B. Use oscillating fans", "C. Train branches and adjust lighting height/angle", "D. Feed high nitrogen"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the danger of storing cannabis in overly humid jars?",
+        "options": ["A. Buds shrink", "B. Potency increases", "C. Buds develop mold or mildew", "D. Buds over-dry"],
+        "a": "C"
+    },
+    {
+        "q": "What does sugar leaf curling under near harvest usually indicate?",
+        "options": ["A. Underwatering", "B. Rootbound", "C. Normal senescence or stress from ripening", "D. Calcium overdose"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the first step in addressing a suspected nutrient lockout?",
+        "options": ["A. Add more nutrients", "B. Raise lights", "C. Check runoff pH and EC levels", "D. Add compost"],
+        "a": "C"
+    },
+    {
+        "q": "What deficiency can cause small brown spots on mid-to-lower leaves?",
+        "options": ["A. Phosphorus", "B. Calcium", "C. Magnesium", "D. Zinc"],
+        "a": "B"
+    },
+    {
+        "q": "What’s one benefit of flushing with enzymes before harvest?",
+        "options": ["A. Boosts CO₂", "B. Strengthens stems", "C. Breaks down salt and organic residues in the root zone", "D. Extends flowering"],
+        "a": "C"
+    },
+    {
+        "q": "What is one reason to use infrared (IR) or far-red spectrum at the end of a light cycle?",
+        "options": ["A. Increases vegetative stretch", "B. Helps transition the plant into “sleep” mode faster", "C. Boosts humidity", "D. Kills pests"],
+        "a": "B"
+    },
+    {
+        "q": "Why is it risky to reuse unsterilized soil in cannabis grows?",
+        "options": ["A. Light won’t penetrate", "B. It holds too much potassium", "C. Potential pests, pathogens, or nutrient imbalances carry over", "D. It turns hydrophobic"],
+        "a": "C"
+    },
+    {
+        "q": "What is the benefit of using companion plants like basil or marigold in an outdoor cannabis grow?",
+        "options": ["A. Shade the main plant", "B. Absorb nitrogen", "C. Repel pests and attract beneficial insects", "D. Add color for camouflage"],
+        "a": "C"
+    },
+    {
+        "q": "What does “larf” refer to in cannabis cultivation?",
+        "options": ["A. Moldy buds", "B. Undeveloped, airy lower buds with low density", "C. Overripe colas", "D. Pollen sacs"],
+        "a": "B"
+    },
+    {
+        "q": "Why is it important to keep buds in the dark during drying?",
+        "options": ["A. Triggers stretch", "B. Boosts pH", "C. Light degrades terpenes and cannabinoids", "D. Helps chlorophyll development"],
+        "a": "C"
+    },
+    {
+        "q": "What does “senescence” mean in cannabis?",
+        "options": ["A. Early flowering", "B. Genetic mutation", "C. Natural aging and leaf yellowing near harvest", "D. Heat damage"],
+        "a": "C"
+    },
+    {
+        "q": "Which condition often leads to phosphorus lockout even if it’s present?",
+        "options": ["A. High RH", "B. Low humidity", "C. Cold root zone temperatures", "D. Too much CO₂"],
+        "a": "C"
+    },
+    {
+        "q": "What’s the risk of letting runoff sit in saucers under pots?",
+        "options": ["A. Attracts CO₂", "B. Helps chlorophyll retention", "C. Promotes root rot and salt buildup", "D. Increases airflow"],
+        "a": "C"
+    },
+    {
+        "q": "What is a good EC range for young seedlings in coco?",
+        "options": ["A. 0.1–0.3", "B. 0.4–0.6", "C. 1.0–1.5", "D. 2.0–2.5"],
+        "a": "B"
+    },
+    {
+        "q": "What can help prevent salt buildup in coco coir systems?",
+        "options": ["A. Cold water", "B. Weekly enzyme flush or runoff until EC drops", "C. Add silica", "D. Switch to soil mid-grow"],
+        "a": "B"
+    },
+    {
+        "q": "What nutrient supports enzyme function, leaf structure, and disease resistance?",
+        "options": ["A. Boron", "B. Zinc", "C. Manganese", "D. Sulfur"],
+        "a": "D"
+    },
+    {
+        "q": "What does it typically mean if your fan leaves droop, but the medium is still moist?",
+        "options": ["A. High EC", "B. Overwatering and lack of oxygen to roots", "C. Potassium lockout", "D. Leaf senescence"],
+        "a": "B"
+    },
+    {
+    "q": "Why should you avoid using high-nitrogen nutrients in late flower?",
+    "options": ["A. Nitrogen turns into sugar", "B. It causes leaf tips to burn", "C. Excess nitrogen can lead to leafy buds and reduced flavor", "D. It boosts potassium too much"],
+    "a": "C"
+},
+{
+    "q": "What is a reliable sign of powdery mildew under a microscope?",
+    "options": ["A. Red spores", "B. Thin, cobweb-like hyphae and chains of spores on leaf surface", "C. Yellow dust in veins", "D. Fuzzy orange mold"],
+    "a": "B"
+},
+{
+    "q": "What does it usually mean when buds feel damp even in low humidity?",
+    "options": ["A. Overfeeding", "B. Resin build-up", "C. Bud rot or trapped moisture", "D. Terpene saturation"],
+    "a": "C"
+},
+{
+    "q": "Which method can increase secondary metabolite production (like terpenes)?",
+    "options": ["A. Overfeeding nitrogen", "B. Using blue and UV spectrum lighting during late flower", "C. Raising RH to 80%", "D. Shortening the light cycle to 6 hours"],
+    "a": "B"
+},
+{
+    "q": "What happens if trichomes are mostly clear at harvest?",
+    "options": ["A. Peak potency", "B. Low flavor, but high THC", "C. Immature cannabinoids and reduced effects", "D. High CBN content"],
+    "a": "C"
+},
+{
+    "q": "Which deficiency causes pale leaves and interveinal yellowing, starting on older growth?",
+    "options": ["A. Iron", "B. Nitrogen", "C. Magnesium", "D. Sulfur"],
+    "a": "C"
+},
+{
+    "q": "What’s a benefit of “nighttime temperature drops” in late flower?",
+    "options": ["A. Triggers faster stretch", "B. Enhances flavor, color expression, and terpene retention", "C. Slows down resin development", "D. Increases chlorophyll"],
+    "a": "B"
+},
+{
+    "q": "Why is silica often used in coco and hydro grows?",
+    "options": ["A. Boosts leaf mass", "B. Feeds microbes", "C. Strengthens cell walls and helps with environmental stress", "D. Reduces humidity"],
+    "a": "C"
+},
+{
+    "q": "What’s a major visual difference between male and female preflowers?",
+    "options": ["A. Females have pollen sacs", "B. Males have pistils", "C. Females show calyxes with pistils; males show rounded sacs", "D. Males smell stronger"],
+    "a": "C"
+},
+{
+    "q": "What can happen if you don’t flush or taper nutrients before harvest in coco?",
+    "options": ["A. Plants herm", "B. Buds dry faster", "C. Harsh taste, chemical flavor, and black ash", "D. Extra terpenes"],
+    "a": "C"
+},
+{
+    "q": "What does the term “genetic stability” refer to in cannabis breeding?",
+    "options": ["A. How fast a plant flowers", "B. The amount of THC produced", "C. Consistent traits across multiple generations", "D. The pH range of a strain"],
+    "a": "C"
+},
+{
+    "q": "What’s a sign your buds were not dried properly before jarring?",
+    "options": ["A. Terpenes are too strong", "B. Orange hairs fall off", "C. Moisture reappears and grassy/ammonia smell develops", "D. Buds become crisp and sweet-smelling"],
+    "a": "C"
+},
+{
+    "q": "What nutrient is most commonly locked out when pH drops below 5.5 in coco?",
+    "options": ["A. Nitrogen", "B. Calcium and magnesium", "C. Phosphorus", "D. Iron"],
+    "a": "B"
+},
+{
+    "q": "What are trichome stalks and heads made of?",
+    "options": ["A. Fiber and cellulose", "B. Cannabinoids and terpene-rich resin", "C. Mycorrhizae", "D. Pistil tissue"],
+    "a": "B"
+},
+{
+    "q": "What causes a nutrient “antagonism” in cannabis?",
+    "options": ["A. Mixing soil types", "B. Adding CO₂ too early", "C. One nutrient blocking the uptake of another (e.g., too much potassium blocking calcium)", "D. Using fabric pots"],
+    "a": "C"
+},
+{
+    "q": "What should you do if your entire plant fades yellow during late flower?",
+    "options": ["A. Add nitrogen immediately", "B. Flush with cold water", "C. Recognize it as natural senescence if other signs of health are present", "D. Raise humidity"],
+    "a": "C"
+},
+{
+    "q": "What is bud “foxtailing” most often caused by?",
+    "options": ["A. Low humidity", "B. Late-season topping", "C. Excess heat or genetic tendency", "D. Lack of nitrogen"],
+    "a": "C"
+},
+{
+    "q": "What’s one advantage of using fabric pots over plastic pots?",
+    "options": ["A. Less watering needed", "B. Traps CO₂", "C. Allows for air pruning and better root oxygenation", "D. Blocks pests"],
+    "a": "C"
+},
+{
+    "q": "What’s the ideal curing RH in jars after the first 2 weeks of burping?",
+    "options": ["A. 90%", "B. 30%", "C. 62%", "D. 75%"],
+    "a": "C"
+},
+
+
+     
+]; // Properly close the array and ensure no trailing commas
+
+    let currentQuestion = 0; 
+    let score = 0;
+    let selectedAnswer = null;
+
+    function startTest() {
+      shuffleQuestions();
+      document.getElementById("start").classList.remove("active");
+      document.getElementById("question").classList.add("active");
+      loadQuestion(); // Ensure the first question is loaded
+    }
+
+    function shuffleQuestions() {
+      for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+      }
+    }
+
+    function loadQuestion() {
+      selectedAnswer = null;
+      const q = questions[currentQuestion];
+      document.getElementById("questionText").innerText = q.q; // Display the question text
+      document.getElementById("progressTracker").innerText = `Question ${currentQuestion + 1} of ${questions.length}`; // Update progress tracker
+      const answersDiv = document.getElementById("answers");
+      answersDiv.innerHTML = ""; // Clear previous answers
+      document.getElementById("submitBtn").disabled = true; // Disable submit button initially
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("div");
+        btn.className = "answer";
+        btn.innerText = opt;
+        btn.onclick = () => {
+          selectedAnswer = opt.charAt(0); // Capture the selected answer
+          document.querySelectorAll(".answer").forEach(el => el.classList.remove("selected"));
+          btn.classList.add("selected");
+          document.getElementById("submitBtn").disabled = false; // Enable submit button
+        };
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      if (selectedAnswer === questions[currentQuestion].a) {
+        score++;
+      }
+      currentQuestion++;
+      if (currentQuestion >= questions.length) {
+        document.getElementById("question").classList.remove("active");
+        document.getElementById("result").classList.add("active");
+        document.getElementById("score").innerText = `You scored ${score} out of ${questions.length}`;
+      } else {
+        loadQuestion(); // Load the next question
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Master Grower Certification Purchase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+    }
+    .container {
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    .option {
+      background-color: #e8ffe8;
+      border: 2px solid #4CAF50;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .option h2 {
+      margin: 0 0 10px;
+    }
+    .option p {
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    .option button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .option button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Master Grower Certification TEST & STUDY GUIDE</h1>
+
+    <div class="option">
+      <h2>TEST & STUDY GUIDE – $1000</h2>
+      <p>Pressing this works the same but gives access to both.</p>
+      <button onclick="window.location.href='https://buy.stripe.com/28o6q54Bu193bS06oo'">Purchase Test & Study Guide</button>
+    </div>
+
+    <div class="option">
+      <h2>STUDY GUIDE ONLY – $200</h2>
+      <p>Same function as test button but gives access to just study guide.</p>
+      <button onclick="window.location.href='https://buy.stripe.com/cN229P4Bu4lff4ceUW'">Purchase Study Guide</button>
+    </div>
+
+    <div class="option">
+      <h2>TEST ONLY – $800</h2>
+      <p>Once clicked, will bring you to place to purchase test, and once bought can access test.</p>
+      <button onclick="window.location.href='https://buy.stripe.com/4gwg0Fgkc04Zf4c145'">Purchase Test</button>
+    </div>
+  </div>
+  <script>
+    // Save the HTML content to localStorage on page unload
+    window.addEventListener("beforeunload", () => {
+      localStorage.setItem("Testandstudyguidepaywall", document.documentElement.outerHTML);
+    });
+
+    // Restore the HTML content from localStorage on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedContent = localStorage.getItem("Testandstudyguidepaywall");
+      if (savedContent) {
+        document.open();
+        document.write(savedContent);
+        document.close();
+      }
+    });
+  </script>
+</body>
+</html>
